@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj",
+        "projectName": "InteractiveConsoleAC",
+        "projectPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj",
+        "packagesPath": "C:\\Users\\PonasPx\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\PonasPx\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj": {
+                "projectPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "Colorful.Console": {
+              "target": "Package",
+              "version": "[1.2.9, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj",
+        "projectName": "InteractiveConsole",
+        "projectPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj",
+        "packagesPath": "C:\\Users\\PonasPx\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\PonasPx\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "dependencies": {
+            "Colorful.Console": {
+              "target": "Package",
+              "version": "[1.2.9, )"
+            },
+            "Unity": {
+              "target": "Package",
+              "version": "[5.11.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

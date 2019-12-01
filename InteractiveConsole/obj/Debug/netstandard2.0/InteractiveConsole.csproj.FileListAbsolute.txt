@@ -1,0 +1,3 @@
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.0\InteractiveConsole.csprojAssemblyReference.cache
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.0\InteractiveConsole.AssemblyInfoInputs.cache
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.0\InteractiveConsole.AssemblyInfo.cs

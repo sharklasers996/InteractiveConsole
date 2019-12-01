@@ -1,0 +1,8 @@
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\bin\Debug\netstandard2.1\InteractiveConsole.deps.json
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\bin\Debug\netstandard2.1\InteractiveConsole.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\bin\Debug\netstandard2.1\InteractiveConsole.pdb
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.1\InteractiveConsole.csprojAssemblyReference.cache
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.1\InteractiveConsole.AssemblyInfoInputs.cache
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.1\InteractiveConsole.AssemblyInfo.cs
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.1\InteractiveConsole.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsole\obj\Debug\netstandard2.1\InteractiveConsole.pdb

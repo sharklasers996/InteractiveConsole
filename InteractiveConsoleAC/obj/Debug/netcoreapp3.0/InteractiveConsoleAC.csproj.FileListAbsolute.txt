@@ -1,0 +1,17 @@
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsoleAC.exe
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsoleAC.deps.json
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsoleAC.runtimeconfig.json
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsoleAC.runtimeconfig.dev.json
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsoleAC.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsoleAC.pdb
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\Unity.Abstractions.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\Unity.Container.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsole.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\InteractiveConsole.pdb
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\obj\Debug\netcoreapp3.0\InteractiveConsoleAC.csprojAssemblyReference.cache
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\obj\Debug\netcoreapp3.0\InteractiveConsoleAC.AssemblyInfoInputs.cache
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\obj\Debug\netcoreapp3.0\InteractiveConsoleAC.AssemblyInfo.cs
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\obj\Debug\netcoreapp3.0\InteractiveConsoleAC.csproj.CopyComplete
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\obj\Debug\netcoreapp3.0\InteractiveConsoleAC.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\obj\Debug\netcoreapp3.0\InteractiveConsoleAC.pdb
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleAC\bin\Debug\netcoreapp3.0\Colorful.Console.dll
