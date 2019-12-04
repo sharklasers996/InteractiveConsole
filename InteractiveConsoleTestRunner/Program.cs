@@ -1,20 +1,19 @@
-﻿using System;
-using InteractiveConsole;
+﻿using InteractiveConsole;
 using Unity;
 
 namespace InteractiveConsoleTestRunner
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var cliRunner = new CliRunner
-            {
-                Container = new UnityContainer(),
-                Title = "IMDb Thing"
-            };
-            cliRunner.Container.RegisterType<IIMDbService, IMDbService>();
-            cliRunner.Run();
+            new InteractiveConsoleBuilder()
+                .WithTitle("Video Search")
+                .WithServices(services =>
+                {
+                    services.RegisterType<IIMDbService, IMDbService>();
+                    services.RegisterSingleton<ITorrentService, TorrentService>();
+                }).Run();
         }
     }
 }

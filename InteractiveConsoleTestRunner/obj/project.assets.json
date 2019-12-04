@@ -26,6 +26,18 @@
           "lib/netstandard2.0/Colorful.Console.dll": {}
         }
       },
+      "Fastenshtein/1.0.0.5": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime": "4.1.0"
+        },
+        "compile": {
+          "lib/netstandard1.0/Fastenshtein.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.0/Fastenshtein.dll": {}
+        }
+      },
       "HtmlAgilityPack/1.11.17": {
         "type": "package",
         "dependencies": {
@@ -1159,6 +1171,22 @@
         "lib/net46/Colorful.Console.dll",
         "lib/net461/Colorful.Console.dll",
         "lib/netstandard2.0/Colorful.Console.dll"
+      ]
+    },
+    "Fastenshtein/1.0.0.5": {
+      "sha512": "zsNcxoqe7PaouGKu8aFYJpWO7u96RtBqmkgOGVY3OsQoM/Lr2AMe8BfksdrqcJRDiKvhPRUffg17GC+K1XtkYw==",
+      "type": "package",
+      "path": "fastenshtein/1.0.0.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "fastenshtein.1.0.0.5.nupkg.sha512",
+        "fastenshtein.nuspec",
+        "lib/net40-client/Fastenshtein.dll",
+        "lib/net40-client/Fastenshtein.xml",
+        "lib/netstandard1.0/Fastenshtein.dll",
+        "lib/portable-net40+sl5+win8+wpa+wp8/Fastenshtein.dll",
+        "lib/portable-net40+sl5+win8+wpa+wp8/Fastenshtein.xml"
       ]
     },
     "HtmlAgilityPack/1.11.17": {
@@ -4170,6 +4198,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.0": [
+      "Fastenshtein >= 1.0.0.5",
       "HtmlAgilityPack >= 1.11.17",
       "InteractiveConsole >= 1.0.0",
       "Unity >= 5.11.1"
@@ -4220,6 +4249,10 @@
     "frameworks": {
       "netcoreapp3.0": {
         "dependencies": {
+          "Fastenshtein": {
+            "target": "Package",
+            "version": "[1.0.0.5, )"
+          },
           "HtmlAgilityPack": {
             "target": "Package",
             "version": "[1.11.17, )"

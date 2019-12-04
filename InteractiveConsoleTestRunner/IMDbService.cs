@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -90,6 +91,93 @@ namespace InteractiveConsoleTestRunner
             }
 
             return null;
+        }
+
+        public IMDbTitleData GetData(string url)
+        {
+            var result = new IMDbTitleData
+            {
+                Url = url
+            };
+
+            try
+            {
+                var content = DownloadString(url);
+
+                var doc = new HtmlDocument();
+                doc.LoadHtml(content.Trim());
+
+                var titleNode = doc.DocumentNode.SelectSingleNode("//div[@class='title_wrapper']/h1");
+                result.Title = titleNode?.InnerText;
+
+                var yearNode = doc.DocumentNode.SelectSingleNode("//span[@id='titleYear']");
+                result.Year = yearNode?.InnerText;
+
+                var posterNodes = doc.DocumentNode.SelectNodes("//img[contains(@title, 'Poster')]");
+                var posterSrc = posterNodes?[0].Attributes["src"];
+                if (posterSrc != null)
+                {
+                    var posterValue = posterSrc.Value;
+
+                    var posterEnding = "V1_";
+                    var endIndex = posterValue.IndexOf(posterEnding) + posterEnding.Length;
+                    if (endIndex <= posterValue.Length)
+                    {
+                        result.PosterUrl = posterValue.Substring(0, endIndex) + ".jpg";
+                    }
+                    else
+                    {
+                        result.PosterUrl = posterValue.Replace("SX214_AL_.jpg", "SX640_SY720_.jpg");
+                    }
+                }
+
+                var ratingNode = doc.DocumentNode.SelectSingleNode("//span[@itemprop='ratingValue']");
+                if (ratingNode != null)
+                {
+                    result.Rating = Convert.ToDouble(ratingNode.InnerText);
+                }
+
+                var plotNode = doc.DocumentNode.SelectSingleNode("//div[@class='summary_text']");
+                if (plotNode != null)
+                {
+                    result.Plot = HttpUtility.HtmlDecode(plotNode.InnerText.Trim());
+                }
+
+                var genreNodes = doc.DocumentNode.SelectNodes("//div[@class='subtext']/a[contains(@href, 'genre')]");
+                if (genreNodes != null)
+                {
+                    foreach (var genreNode in genreNodes)
+                    {
+                        result.Genres += genreNode.InnerText.Trim() + " | ";
+                    }
+
+                    result.Genres = result.Genres.Trim(' ', '|');
+                }
+
+                var actorsNodes = doc.DocumentNode.SelectNodes("//div[@class='plot_summary ']//div[4]/a[contains(@href, '/name/')]");
+                if (actorsNodes != null)
+                {
+                    result.Actors = string.Join(", ", actorsNodes.Select(x => x.InnerText));
+                }
+
+                var durationNode = doc.DocumentNode.SelectSingleNode("//div[@class='subtext']/time");
+                if (durationNode != null)
+                {
+                    result.Duration = durationNode.InnerText.Trim();
+                }
+
+                var episodeGuideNode = doc.DocumentNode.SelectSingleNode("//a[@class='bp_item np_episode_guide np_right_arrow']");
+                if (episodeGuideNode != null)
+                {
+                    result.IsTvShow = true;
+                }
+            }
+            catch
+            {
+                // Ignored
+            }
+
+            return result;
         }
     }
 }

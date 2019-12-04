@@ -2,6 +2,7 @@ using System.Linq;
 using System;
 using InteractiveConsole.Models;
 using InteractiveConsole.Extensions;
+using InteractiveConsole.Storage;
 
 namespace InteractiveConsole
 {
@@ -10,6 +11,13 @@ namespace InteractiveConsole
         public ICommand CommandInstance { get; set; }
         public ParameterParserResult ParserResult { get; set; }
         public CommandInfo CommandInfo { get; set; }
+
+        private readonly IInMemoryStorage _InMemoryStorage;
+
+        public ParameterProcessor(IInMemoryStorage InMemoryStorage)
+        {
+            _InMemoryStorage = InMemoryStorage;
+        }
 
         public bool SetParameters()
         {
@@ -38,23 +46,31 @@ namespace InteractiveConsole
                 }
 
                 var instanceProperty = commandType.GetProperty(parameter.Name);
-                object parameterValue = parameter.Value;
-
-                if (instanceProperty.PropertyType.IsNumericType()
-                    && int.TryParse(parameter.Value, out var numberParameter))
+                var storageValue = _InMemoryStorage.TryGetVariable(parameter.Value);
+                if (storageValue != null)
                 {
-                    parameterValue = numberParameter;
+                    instanceProperty.SetValue(CommandInstance, storageValue.Value);
                 }
-
-                if (instanceProperty.PropertyType.IsEnum)
+                else
                 {
-                    if (Enum.TryParse(instanceProperty.PropertyType, parameterValue.ToString(), out var parsedEnum))
+                    object parameterValue = parameter.Value;
+
+                    if (instanceProperty.PropertyType.IsNumericType()
+                        && int.TryParse(parameter.Value, out var numberParameter))
                     {
-                        parameterValue = parsedEnum;
+                        parameterValue = numberParameter;
                     }
-                }
 
-                instanceProperty.SetValue(CommandInstance, parameterValue);
+                    if (instanceProperty.PropertyType.IsEnum)
+                    {
+                        if (Enum.TryParse(instanceProperty.PropertyType, parameterValue.ToString(), out var parsedEnum))
+                        {
+                            parameterValue = parsedEnum;
+                        }
+                    }
+
+                    instanceProperty.SetValue(CommandInstance, parameterValue);
+                }
             }
 
             return true;

@@ -19,6 +19,9 @@ namespace InteractiveConsoleAC
     {
         static void Main(string[] args)
         {
+            var input = new InputHandler(new AutoCompleteHandler(), PrinterThemes.LadiesNight);
+            var a = input.Prompt($"Username: ");
+            System.Console.WriteLine($"result: {a}");
             var ogre = FigletFont.Parse(PrinterFonts.Doh);
             var f = new Figlet(ogre);
             Console.WriteLine(f.ToAscii("Title!"), ColorTranslator.FromHtml("#558b2f"));

@@ -8,5 +8,6 @@ namespace InteractiveConsoleTestRunner
         List<IMDbSearchItem> SearchAll(string query);
         List<IMDbSearchItem> SearchMovies(string query);
         List<IMDbSearchItem> SearchTvShows(string query);
+        IMDbTitleData GetData(string url);
     }
 }

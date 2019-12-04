@@ -22,27 +22,27 @@ namespace InteractiveConsoleAC
         [CommandParameter]
         public string SuperParameter3 { get; set; }
 
-        public Task Execute()
+        public object Execute()
         {
-            return Task.FromResult(0);
+            return null;
         }
     }
 
     [Command]
     public class FineCommand : ICommand
     {
-        public Task Execute()
+        public object Execute()
         {
-            return Task.FromResult(0);
+            return null;
         }
     }
 
     [Command]
     public class InterestingCommand : ICommand
     {
-        public Task Execute()
+        public object Execute()
         {
-            return Task.FromResult(0);
+            return null;
         }
     }
 }

@@ -17,3 +17,4 @@ C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleTestRunner\obj
 C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleTestRunner\obj\Debug\netcoreapp3.0\InteractiveConsoleTestRunner.dll
 C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleTestRunner\obj\Debug\netcoreapp3.0\InteractiveConsoleTestRunner.pdb
 C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleTestRunner\bin\Debug\netcoreapp3.0\Colorful.Console.dll
+C:\Users\PonasPx\Code\csharp\InteractiveConsole\InteractiveConsoleTestRunner\bin\Debug\netcoreapp3.0\Fastenshtein.dll

@@ -6,5 +6,6 @@ namespace InteractiveConsole.Storage
     {
         List<InMemoryStorageVariable> Variables { get; }
         void Add(object value, ParameterParserResult parserResult);
+        InMemoryStorageVariable TryGetVariable(string stringId);
     }
 }

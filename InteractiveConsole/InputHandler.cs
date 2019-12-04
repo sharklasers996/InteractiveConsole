@@ -44,7 +44,7 @@ namespace InteractiveConsole
             };
         }
 
-        public string ReadLine()
+        public string ReadLine(bool masked = false)
         {
             var keyInfo = Console.ReadKey(true);
             while (keyInfo.Key != ConsoleKey.Enter)
@@ -55,7 +55,14 @@ namespace InteractiveConsole
                 }
                 else
                 {
-                    WriteChar(keyInfo.KeyChar);
+                    if (masked)
+                    {
+                        WriteCharMasked(keyInfo.KeyChar);
+                    }
+                    else
+                    {
+                        WriteChar(keyInfo.KeyChar);
+                    }
                 }
 
                 keyInfo = Console.ReadKey(true);
@@ -73,7 +80,7 @@ namespace InteractiveConsole
             return result;
         }
 
-        public string Prompt(string prompt)
+        public string Prompt(string prompt, bool masked = false)
         {
             _text.Clear();
             _text.Append(prompt);
@@ -84,7 +91,7 @@ namespace InteractiveConsole
 
             Console.Write(_text.ToString());
 
-            return ReadLine().Replace(prompt, string.Empty);
+            return ReadLine(masked).Replace(prompt, string.Empty);
         }
 
         private void Complete()
@@ -100,7 +107,7 @@ namespace InteractiveConsole
             Console.SetCursorPosition(_text.Length, Console.CursorTop);
 
             _cursorLimitRight = _text.Length;
-          //  ApplyColors();
+            //  ApplyColors();
         }
 
         private void CompleteSelection(bool next)
@@ -123,7 +130,7 @@ namespace InteractiveConsole
 
             _cursorLimitRight = _text.Length;
             MoveCursorRightUntilFirstSpaceOrEnd();
-          //  ApplyColors();
+            //  ApplyColors();
         }
 
         private void ApplyColors()
@@ -159,6 +166,30 @@ namespace InteractiveConsole
                     }
                 }
             }
+        }
+
+        private void WriteCharMasked(char input)
+        {
+            if (IsEndOfLine)
+            {
+                _text.Append(input);
+                Console.Write('*');
+                _cursorPosition++;
+            }
+            else
+            {
+                var textAfterCursor = _text.ToString().Substring(_cursorPosition);
+                _text.Insert(_cursorPosition, input);
+
+                using (new PersistConsolePosition())
+                {
+                    Console.Write(new string('*', textAfterCursor.Length + 1));
+                }
+
+                MoveCursorRight();
+            }
+
+            _cursorLimitRight++;
         }
 
         private void WriteChar(char input)

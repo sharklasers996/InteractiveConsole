@@ -42,6 +42,11 @@ namespace InteractiveConsole.Output
             Console.WriteLine(text);
         }
 
+        public void Print(object obj)
+        {
+            Console.WriteLine(obj);
+        }
+
         public void PrintCommands(List<CommandInfo> commands)
         {
             Console.WriteLine("Available commands:", _theme.Secondary);

@@ -8,6 +8,7 @@ namespace InteractiveConsole.Output
         void PrintHeader(string text);
         void PrintSubheader(string text);
         void Print(string text = null);
+         void Print(object obj);
         void PrintAscii(string text, string font);
         void PrintCommands(List<CommandInfo> commands);
         string PrintWithSelection(object item, Dictionary<string, string> availableActions);
