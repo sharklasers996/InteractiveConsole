@@ -265,8 +265,9 @@ __pycache__/
 /**/bin/*
 **/**/Debug/
 *.dll
-InteractiveConsole/bin/Debug/netstandard2.1/InteractiveConsole.dll
-InteractiveConsole/bin/Debug/netstandard2.1/InteractiveConsole.pdb
+InteractiveConsoleAC
 .vscode
 InteractiveConsoleTestRunner/**
 .ionide/symbolCache.db
+**/obj/
+InteractiveConsole.Tests/obj/
