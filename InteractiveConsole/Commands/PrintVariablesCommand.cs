@@ -4,7 +4,7 @@ using InteractiveConsole.Storage;
 namespace InteractiveConsole.Commands
 {
     [Command]
-    public class PrintVariablesCommand : BaseCommand, ICommand
+    public class PrintVariablesCommand : BaseCommand//, ICommand
     {
         private readonly IInMemoryStorage _inMemoryStorage;
         public PrintVariablesCommand(IInMemoryStorage inMemoryStorage)
@@ -12,7 +12,7 @@ namespace InteractiveConsole.Commands
             _inMemoryStorage = inMemoryStorage;
         }
 
-        public object Execute()
+        public override object Execute()
         {
             Printer.PrintHeader($"Storage contains {_inMemoryStorage.Variables.Count} variables.");
 

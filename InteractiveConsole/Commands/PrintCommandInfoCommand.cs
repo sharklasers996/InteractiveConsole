@@ -7,7 +7,7 @@ using InteractiveConsole.Extensions;
 namespace InteractiveConsole.Commands
 {
     [Command]
-    public class PrintCommandInfoCommand : BaseCommand, ICommand
+    public class PrintCommandInfoCommand : BaseCommand//, ICommand
     {
         [CommandParameter]
         public string CommandName { get; set; }
@@ -19,7 +19,7 @@ namespace InteractiveConsole.Commands
             _commandDiscovery = commandDiscovery;
 
         }
-        public object Execute()
+        public override object Execute()
         {
             var command = _commandDiscovery.AvailableCommands.FirstOrDefault(x => x.NameWithoutSuffix == CommandName);
             if (command == null)

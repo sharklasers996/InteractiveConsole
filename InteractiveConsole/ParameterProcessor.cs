@@ -8,7 +8,7 @@ namespace InteractiveConsole
 {
     public class ParameterProcessor
     {
-        public ICommand CommandInstance { get; set; }
+        public BaseCommand CommandInstance { get; set; }
         public ParameterParserResult ParserResult { get; set; }
         public CommandInfo CommandInfo { get; set; }
 

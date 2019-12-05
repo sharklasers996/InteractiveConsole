@@ -6,5 +6,12 @@ namespace InteractiveConsole
     {
         public IPrinter Printer { get; set; }
         public IInputHandler InputHandler { get; set; }
+
+        public virtual bool IsValid()
+        {
+            return true;
+        }
+
+        public abstract object Execute();
     }
 }

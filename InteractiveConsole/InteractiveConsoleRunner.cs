@@ -51,9 +51,15 @@ namespace InteractiveConsole
                     continue;
                 }
 
-                if (!(Container.Resolve(command.Type) is ICommand commandInstance))
+                if (!(Container.Resolve(command.Type) is BaseCommand commandInstance))
                 {
                     Console.WriteLine("Failed to create command instance");
+                    continue;
+                }
+
+                if (!commandInstance.IsValid())
+                {
+                    _printer.Print("Command options are invalid");
                     continue;
                 }
 

@@ -4,12 +4,12 @@ using InteractiveConsole.Storage;
 namespace InteractiveConsole.Commands
 {
     [Command]
-    public class PrintVariableInfoCommand : BaseCommand, ICommand
+    public class PrintVariableInfoCommand : BaseCommand//, ICommand
     {
         [CommandParameter]
         public InMemoryStorageVariable Variable { get; set; }
 
-        public object Execute()
+        public override object Execute()
         {
             if (Variable.IsList)
             {
