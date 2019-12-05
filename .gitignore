@@ -269,5 +269,7 @@ InteractiveConsoleAC
 .vscode
 InteractiveConsoleTestRunner/**
 .ionide/symbolCache.db
-**/obj/
+/**/obj/*
+*/obj/
 InteractiveConsole.Tests/obj/
+*.cache
