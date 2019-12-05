@@ -9,6 +9,8 @@ namespace InteractiveConsole
 {
     public class AutoCompleteHandler : IAutoCompleteHandler
     {
+        private const char Space = ' ';
+
         private readonly List<CommandInfo> _availableCommands;
 
         public AutoCompleteHandler()
@@ -20,7 +22,7 @@ namespace InteractiveConsole
         public string Complete(string input)
         {
             var trimmedInput = input.TrimStart();
-            if (!trimmedInput.Contains(' '))
+            if (!trimmedInput.Contains(Space))
             {
                 return CompleteCommand(trimmedInput);
             }
@@ -31,6 +33,11 @@ namespace InteractiveConsole
         private string CompleteCommand(string input)
         {
             var command = _availableCommands.FirstOrDefault(x => x.NameWithoutSuffix.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
+            if (command == null)
+            {
+                return input;
+            }
+
             if (command.NameWithoutSuffix.Equals(input))
             {
                 var currentCommandIndex = _availableCommands.IndexOf(command);
@@ -50,10 +57,15 @@ namespace InteractiveConsole
         private string CompleteOption(string input)
         {
             var completedCommand = GetCompletedCommand(input);
+            if (completedCommand == null)
+            {
+                return input;
+            }
+
             var completedParameters = GetCompletedParamters(input).ToList();
 
             var wordToComplete = string.Empty;
-            var lastSpaceIndex = input.LastIndexOf(' ');
+            var lastSpaceIndex = input.LastIndexOf(Space);
             if (lastSpaceIndex < input.Length - 1)
             {
                 wordToComplete = input
@@ -96,6 +108,10 @@ namespace InteractiveConsole
         public string CompleteOptionSelection(string input, int cursorPosition, bool next)
         {
             var completedCommand = GetCompletedCommand(input);
+            if (completedCommand == null)
+            {
+                return input;
+            }
 
             var wordAtCursor = GetWordAtCursor(input, cursorPosition);
             var equalSignIndex = wordAtCursor.IndexOf("=");
@@ -145,17 +161,17 @@ namespace InteractiveConsole
         {
             if (input.Length - 1 == cursorPosition)
             {
-                var lastIndexOfSpace = input.LastIndexOf(" ");
+                var lastIndexOfSpace = input.LastIndexOf(Space);
                 return input.Substring(lastIndexOfSpace).Trim();
             }
 
             var textBeforeCursor = input.Substring(0, cursorPosition);
             var textAfterCursor = input.Substring(cursorPosition);
 
-            var beforeCursorSpaceIndex = textBeforeCursor.LastIndexOf(" ");
+            var beforeCursorSpaceIndex = textBeforeCursor.LastIndexOf(Space);
             textBeforeCursor = textBeforeCursor.Substring(beforeCursorSpaceIndex);
 
-            var afterCursorSpaceIndex = textAfterCursor.IndexOf(" ");
+            var afterCursorSpaceIndex = textAfterCursor.IndexOf(Space);
             if (afterCursorSpaceIndex != -1)
             {
                 textAfterCursor = textAfterCursor.Substring(0, afterCursorSpaceIndex);
@@ -166,7 +182,12 @@ namespace InteractiveConsole
 
         private CommandInfo GetCompletedCommand(string input)
         {
-            var command = input.Substring(0, input.IndexOf(' '));
+            if (input.IndexOf(Space) == -1)
+            {
+                return null;
+            }
+
+            var command = input.Substring(0, input.IndexOf(Space));
             return _availableCommands.FirstOrDefault(x => x.NameWithoutSuffix == command);
         }
 

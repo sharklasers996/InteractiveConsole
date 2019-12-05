@@ -45,36 +45,42 @@ namespace InteractiveConsole
                 var command = _commandDiscovery
                     .AvailableCommands
                     .FirstOrDefault(x => x.Name == parserResult.CommandName);
-                if (command != null)
+                if (command == null)
                 {
-                    if (!(Container.Resolve(command.Type) is ICommand commandInstance))
-                    {
-                        Console.WriteLine("Failed to create command instance");
-                        continue;
-                    }
+                    _printer.Print("Could not find command");
+                    continue;
+                }
 
-                    if (command.Type.IsSubclassOf(typeof(BaseCommand)))
-                    {
-                        ((BaseCommand)commandInstance).Printer = _printer;
-                        ((BaseCommand)commandInstance).InputHandler = _inputHandler;
-                    }
+                if (!(Container.Resolve(command.Type) is ICommand commandInstance))
+                {
+                    Console.WriteLine("Failed to create command instance");
+                    continue;
+                }
 
-                    var parameterProcessor = new ParameterProcessor(_inMemoryStorage)
-                    {
-                        CommandInstance = commandInstance,
-                        ParserResult = parserResult,
-                        CommandInfo = command
-                    };
+                if (command.Type.IsSubclassOf(typeof(BaseCommand)))
+                {
+                    ((BaseCommand)commandInstance).Printer = _printer;
+                    ((BaseCommand)commandInstance).InputHandler = _inputHandler;
+                }
 
-                    var success = parameterProcessor.SetParameters();
-                    if (success)
-                    {
-                        var result = commandInstance.Execute();
-                        if (result != null)
-                        {
-                            _inMemoryStorage.Add(result, parserResult);
-                        }
-                    }
+                var parameterProcessor = new ParameterProcessor(_inMemoryStorage)
+                {
+                    CommandInstance = commandInstance,
+                    ParserResult = parserResult,
+                    CommandInfo = command
+                };
+
+                var success = parameterProcessor.SetParameters();
+                if (!success)
+                {
+                    _printer.Print("Failed to set parameters");
+                    continue;
+                }
+
+                var result = commandInstance.Execute();
+                if (result != null)
+                {
+                    _inMemoryStorage.Add(result, parserResult);
                 }
             }
         }
