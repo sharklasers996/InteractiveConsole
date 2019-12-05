@@ -13,7 +13,7 @@ namespace InteractiveConsole.Models
             set
             {
                 _name = value;
-                NameWithoutSuffix = value.Replace("Command", string.Empty);
+                NameWithoutSuffix = value.Substring(0, value.Length - "Command".Length);
             }
         }
         public string NameWithoutSuffix { get; private set; }
