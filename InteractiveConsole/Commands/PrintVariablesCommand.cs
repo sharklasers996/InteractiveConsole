@@ -18,7 +18,7 @@ namespace InteractiveConsole.Commands
 
             foreach (var variable in _inMemoryStorage.Variables)
             {
-                Printer.Print($"{variable.Id}: {variable.Description}");
+                Printer.Print($"{variable.Id}: ");
             }
 
             Printer.Print();

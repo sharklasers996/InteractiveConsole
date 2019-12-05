@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace InteractiveConsole.Models
@@ -7,5 +8,6 @@ namespace InteractiveConsole.Models
         public string Name { get; set; }
         public bool Required { get; set; }
         public List<string> AvailableValues { get; set; }
+        public Type Type { get; set; }
     }
 }

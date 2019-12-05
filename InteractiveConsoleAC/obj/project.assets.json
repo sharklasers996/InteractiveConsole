@@ -2534,11 +2534,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj",
+      "projectUniqueName": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj",
       "projectName": "InteractiveConsoleAC",
-      "projectPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj",
+      "projectPath": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\InteractiveConsoleAC.csproj",
       "packagesPath": "C:\\Users\\PonasPx\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\obj\\",
+      "outputPath": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsoleAC\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -2557,8 +2557,8 @@
       "frameworks": {
         "netcoreapp3.0": {
           "projectReferences": {
-            "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj": {
-              "projectPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj"
+            "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj": {
+              "projectPath": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole\\InteractiveConsole.csproj"
             }
           }
         }

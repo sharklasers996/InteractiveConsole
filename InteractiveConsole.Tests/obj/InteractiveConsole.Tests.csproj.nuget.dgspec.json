@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj": {}
+    "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj": {
+    "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj",
+        "projectUniqueName": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj",
         "projectName": "InteractiveConsole.Tests",
-        "projectPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj",
+        "projectPath": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\InteractiveConsole.Tests.csproj",
         "packagesPath": "C:\\Users\\PonasPx\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\obj\\",
+        "outputPath": "c:\\Users\\PonasPx\\Code\\csharp\\InteractiveConsole\\InteractiveConsole.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

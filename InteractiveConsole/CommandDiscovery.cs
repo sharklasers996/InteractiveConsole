@@ -80,7 +80,8 @@ namespace InteractiveConsole
                     {
                         Name = property.Name,
                         Required = property.GetCustomAttribute(typeof(RequiredAttribute)) != null,
-                        AvailableValues = optionSelections
+                        AvailableValues = optionSelections,
+                        Type = property.PropertyType
                     };
                 }
             }

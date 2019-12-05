@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Collections;
+using InteractiveConsole.Extensions;
 
 namespace InteractiveConsole.Storage
 {
@@ -14,8 +16,27 @@ namespace InteractiveConsole.Storage
             {
                 Id = Variables.Any() ? Variables.Max(x => x.Id) + 1 : 1,
                 Value = value,
-                Description = $"From {parserResult.CommandName}"
+                ProducedByCommand = parserResult.CommandName
             };
+
+            var valueType = value.GetType();
+            if (valueType.IsGenericType 
+                && valueType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                variable.IsList = true;
+                variable.Length = (value as IList).Count;
+            }
+
+            if (valueType.IsNumericType())
+            {
+                variable.IsNumber = true;
+            }
+
+            if (value is string _)
+            {
+                variable.IsString = true;
+            }
+
             Variables.Add(variable);
         }
 

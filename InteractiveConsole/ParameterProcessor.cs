@@ -46,10 +46,22 @@ namespace InteractiveConsole
                 }
 
                 var instanceProperty = commandType.GetProperty(parameter.Name);
-                var storageValue = _InMemoryStorage.TryGetVariable(parameter.Value);
-                if (storageValue != null)
+                var inMemoryVariable = _InMemoryStorage.TryGetVariable(parameter.Value);
+                if (inMemoryVariable != null)
                 {
-                    instanceProperty.SetValue(CommandInstance, storageValue.Value);
+                    if (instanceProperty.PropertyType.IsNumericType()
+                        && inMemoryVariable.IsNumber)
+                    {
+                        instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value.ToString());
+                    }
+                    else if (instanceProperty.PropertyType == typeof(InMemoryStorageVariable))
+                    {
+                        instanceProperty.SetValue(CommandInstance, inMemoryVariable);
+                    }
+                    else
+                    {
+                        instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
+                    }
                 }
                 else
                 {
