@@ -19,18 +19,18 @@ namespace InteractiveConsole
             _availableCommands = discovery.AvailableCommands;
         }
 
-        public string Complete(string input)
+        public string Complete(string input, bool next)
         {
             var trimmedInput = input.TrimStart();
             if (!trimmedInput.Contains(Space))
             {
-                return CompleteCommand(trimmedInput);
+                return CompleteCommand(trimmedInput, next);
             }
 
-            return CompleteOption(input);
+            return CompleteOption(input, next);
         }
 
-        private string CompleteCommand(string input)
+        private string CompleteCommand(string input, bool next)
         {
             var command = _availableCommands.FirstOrDefault(x => x.NameWithoutSuffix.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
             if (command == null)
@@ -40,21 +40,15 @@ namespace InteractiveConsole
 
             if (command.NameWithoutSuffix.Equals(input))
             {
-                var currentCommandIndex = _availableCommands.IndexOf(command);
-
-                var nextIndex = currentCommandIndex + 1;
-                if (nextIndex >= _availableCommands.Count)
-                {
-                    nextIndex = 0;
-                }
-
-                return _availableCommands[nextIndex].NameWithoutSuffix;
+                command = next == true
+                    ? _availableCommands.CycleNext(command)
+                    : _availableCommands.CyclePrevious(command);
             }
 
             return command.NameWithoutSuffix;
         }
 
-        private string CompleteOption(string input)
+        private string CompleteOption(string input, bool next)
         {
             var completedCommand = GetCompletedCommand(input);
             if (completedCommand == null)
@@ -86,7 +80,9 @@ namespace InteractiveConsole
                 {
                     if (optionToComplete.Name.Equals(wordToComplete))
                     {
-                        optionToComplete = availableOptions.CycleNext(optionToComplete);
+                        optionToComplete = next == true
+                            ? availableOptions.CycleNext(optionToComplete)
+                            : availableOptions.CyclePrevious(optionToComplete);
                     }
 
                     input = input.Substring(0, lastSpaceIndex + 1);

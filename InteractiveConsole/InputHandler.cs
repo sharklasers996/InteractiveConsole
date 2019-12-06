@@ -38,7 +38,8 @@ namespace InteractiveConsole
                 ["ControlE"] = MoveCursorEnd,
                 ["Backspace"] = DeleteLeft,
                 ["ControlD"] = DeleteRight,
-                ["Tab"] = Complete,
+                ["Tab"] = () => Complete(next: true),
+                ["ShiftTab"] = () => Complete(next: false),
                 ["ControlN"] = () => CompleteSelection(next: true),
                 ["ControlP"] = () => CompleteSelection(next: false)
             };
@@ -94,9 +95,9 @@ namespace InteractiveConsole
             return ReadLine(masked).Replace(prompt, string.Empty);
         }
 
-        private void Complete()
+        private void Complete(bool next)
         {
-            var result = _autoComplete.Complete(_text.ToString());
+            var result = _autoComplete.Complete(_text.ToString(), next);
             _text.Clear();
             _text.Append(result);
 
