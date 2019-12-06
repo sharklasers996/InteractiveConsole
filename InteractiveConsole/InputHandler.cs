@@ -13,6 +13,8 @@ namespace InteractiveConsole
     public class InputHandler : IInputHandler
     {
         private readonly Dictionary<string, Action> _keyActions;
+        private readonly List<string> _history = new List<string>();
+        private int _historyIndex;
 
         private readonly StringBuilder _text = new StringBuilder();
         private int _cursorPosition;
@@ -43,7 +45,9 @@ namespace InteractiveConsole
                 ["ControlN"] = () => CompleteSelection(next: true),
                 ["ControlP"] = () => CompleteSelection(next: false),
                 ["ControlBackspace"] = DeleteWordLeft,
-                ["AltD"] = DeleteWordRight
+                ["AltD"] = DeleteWordRight,
+                ["UpArrow"] = PreviousCommandInHistory,
+                ["DownArrow"] = NextCommandInHistory
             };
         }
 
@@ -79,6 +83,9 @@ namespace InteractiveConsole
             _cursorPosition = 0;
             _cursorLimitRight = 0;
             _cursorLimitLeft = 0;
+
+            _history.Add(result);
+            _historyIndex = 0;
 
             return result;
         }
@@ -281,6 +288,40 @@ namespace InteractiveConsole
             {
                 DeleteRight();
             }
+        }
+
+        private void PreviousCommandInHistory()
+        {
+            _historyIndex--;
+            if (_historyIndex < 0)
+            {
+                _historyIndex = _history.Count - 1;
+            }
+            PrintHistoryCommand();
+        }
+
+        private void NextCommandInHistory()
+        {
+            _historyIndex++;
+            if (_historyIndex >= _history.Count)
+            {
+                _historyIndex = 0;
+            }
+            PrintHistoryCommand();
+        }
+
+        private void PrintHistoryCommand()
+        {
+
+            _text.Clear();
+            _text.Append(_history[_historyIndex]);
+
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(_history[_historyIndex] + new string(' ', _cursorLimitRight));
+            Console.SetCursorPosition(_text.Length, Console.CursorTop);
+
+            _cursorPosition = _text.Length;
+            _cursorLimitRight = _text.Length;
         }
 
         private void MoveCursorHome()
