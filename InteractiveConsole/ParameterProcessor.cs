@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Linq;
 using System;
 using InteractiveConsole.Models;
@@ -49,42 +50,65 @@ namespace InteractiveConsole
                 var inMemoryVariable = _InMemoryStorage.TryGetVariable(parameter.Value);
                 if (inMemoryVariable != null)
                 {
-                    if (instanceProperty.PropertyType.IsNumericType()
-                        && inMemoryVariable.IsNumber)
-                    {
-                        instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value.ToString());
-                    }
-                    else if (instanceProperty.PropertyType == typeof(InMemoryStorageVariable))
-                    {
-                        instanceProperty.SetValue(CommandInstance, inMemoryVariable);
-                    }
-                    else
-                    {
-                        instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
-                    }
+                    return SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
                 }
-                else
+
+                return SetParameterValue(instanceProperty, parameter);
+            }
+
+            return true;
+        }
+
+        private bool SetInMemoryVariableValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable)
+        {
+            if (instanceProperty.PropertyType.IsNumericType()
+                && inMemoryVariable.IsNumber)
+            {
+                instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value.ToString());
+            }
+            else if (instanceProperty.PropertyType == typeof(InMemoryStorageVariable))
+            {
+                instanceProperty.SetValue(CommandInstance, inMemoryVariable);
+            }
+            else
+            {
+                if (instanceProperty.PropertyType != inMemoryVariable.GetType())
                 {
-                    object parameterValue = parameter.Value;
+                    Console.WriteLine("Parameter type does not match");
+                    return false;
+                }
 
-                    if (instanceProperty.PropertyType.IsNumericType()
-                        && int.TryParse(parameter.Value, out var numberParameter))
-                    {
-                        parameterValue = numberParameter;
-                    }
+                instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
+            }
 
-                    if (instanceProperty.PropertyType.IsEnum)
-                    {
-                        if (Enum.TryParse(instanceProperty.PropertyType, parameterValue.ToString(), out var parsedEnum))
-                        {
-                            parameterValue = parsedEnum;
-                        }
-                    }
+            return true;
+        }
 
-                    instanceProperty.SetValue(CommandInstance, parameterValue);
+        private bool SetParameterValue(PropertyInfo instanceProperty, Parameter parameter)
+        {
+            object parameterValue = parameter.Value;
+
+            if (instanceProperty.PropertyType.IsNumericType()
+                && int.TryParse(parameter.Value, out var numberParameter))
+            {
+                parameterValue = numberParameter;
+            }
+
+            if (instanceProperty.PropertyType.IsEnum)
+            {
+                if (Enum.TryParse(instanceProperty.PropertyType, parameterValue.ToString(), out var parsedEnum))
+                {
+                    parameterValue = parsedEnum;
                 }
             }
 
+            if (instanceProperty.PropertyType != parameterValue.GetType())
+            {
+                Console.WriteLine("Parameter type does not match");
+                return false;
+            }
+
+            instanceProperty.SetValue(CommandInstance, parameterValue);
             return true;
         }
     }
