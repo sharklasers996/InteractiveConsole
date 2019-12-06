@@ -40,37 +40,44 @@ namespace InteractiveConsole
 
             while (true)
             {
-                var input = _inputHandler.ReadLine();
-                var parserResult = ParameterParser.Parse(input);
-
-                if (!TryGetCommand(parserResult, out var command))
+                try
                 {
-                    _printer.Print("Could not find command");
-                    continue;
+                    var input = _inputHandler.ReadLine();
+                    var parserResult = ParameterParser.Parse(input);
+
+                    if (!TryGetCommand(parserResult, out var command))
+                    {
+                        _printer.Print("Could not find command");
+                        continue;
+                    }
+
+                    if (!TryCreateCommandInstance(command, out var commandInstance))
+                    {
+                        _printer.Print("Could not create command instance");
+                        continue;
+                    }
+
+                    if (!commandInstance.IsValid())
+                    {
+                        _printer.Print("Command options are invalid");
+                        continue;
+                    }
+
+                    if (!TrySetParameters(commandInstance, parserResult, command))
+                    {
+                        _printer.Print("Failed to set parameters");
+                        continue;
+                    }
+
+                    var result = commandInstance.Execute();
+                    if (result != null)
+                    {
+                        _inMemoryStorage.Add(result, parserResult);
+                    }
                 }
-
-                if (!TryCreateCommandInstance(command, out var commandInstance))
+                catch (Exception ex)
                 {
-                    _printer.Print("Could not create command instance");
-                    continue;
-                }
-
-                if (!commandInstance.IsValid())
-                {
-                    _printer.Print("Command options are invalid");
-                    continue;
-                }
-
-                if (!TrySetParameters(commandInstance, parserResult, command))
-                {
-                    _printer.Print("Failed to set parameters");
-                    continue;
-                }
-
-                var result = commandInstance.Execute();
-                if (result != null)
-                {
-                    _inMemoryStorage.Add(result, parserResult);
+                    _printer.Print($"Error: {ex.Message}\n{ex.StackTrace}");
                 }
             }
         }
