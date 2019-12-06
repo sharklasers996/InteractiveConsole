@@ -41,7 +41,9 @@ namespace InteractiveConsole
                 ["Tab"] = () => Complete(next: true),
                 ["ShiftTab"] = () => Complete(next: false),
                 ["ControlN"] = () => CompleteSelection(next: true),
-                ["ControlP"] = () => CompleteSelection(next: false)
+                ["ControlP"] = () => CompleteSelection(next: false),
+                ["ControlBackspace"] = DeleteWordLeft,
+                ["AltD"] = DeleteWordRight
             };
         }
 
@@ -246,6 +248,39 @@ namespace InteractiveConsole
 
             MoveCursorRight();
             DeleteLeft();
+        }
+
+        private void DeleteWordLeft()
+        {
+            var textBeforeCursor = _text.ToString(0, _cursorPosition);
+            var lastSpaceIndex = textBeforeCursor.LastIndexOf(' ');
+            if (lastSpaceIndex == -1)
+            {
+                lastSpaceIndex = _cursorLimitLeft;
+            }
+
+            var wordLength = _cursorPosition - lastSpaceIndex;
+            for (var i = 0; i < wordLength; i++)
+            {
+                DeleteLeft();
+            }
+        }
+
+        private void DeleteWordRight()
+        {
+            var textAfterCursor = _text
+                .ToString(_cursorPosition, _text.Length - _cursorPosition)
+                .Trim();
+            var wordLength = textAfterCursor.IndexOf(' ');
+            if (wordLength == -1)
+            {
+                wordLength = _cursorLimitRight;
+            }
+
+            for (var i = 0; i < wordLength; i++)
+            {
+                DeleteRight();
+            }
         }
 
         private void MoveCursorHome()
