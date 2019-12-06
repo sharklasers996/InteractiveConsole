@@ -3,6 +3,7 @@ using System;
 using Unity;
 using InteractiveConsole.Output;
 using InteractiveConsole.Storage;
+using InteractiveConsole.Models;
 
 namespace InteractiveConsole
 {
@@ -42,18 +43,15 @@ namespace InteractiveConsole
                 var input = _inputHandler.ReadLine();
                 var parserResult = ParameterParser.Parse(input);
 
-                var command = _commandDiscovery
-                    .AvailableCommands
-                    .FirstOrDefault(x => x.Name == parserResult.CommandName);
-                if (command == null)
+                if (!TryGetCommand(parserResult, out var command))
                 {
                     _printer.Print("Could not find command");
                     continue;
                 }
 
-                if (!(Container.Resolve(command.Type) is BaseCommand commandInstance))
+                if (!TryCreateCommandInstance(command, out var commandInstance))
                 {
-                    Console.WriteLine("Failed to create command instance");
+                    _printer.Print("Could not create command instance");
                     continue;
                 }
 
@@ -63,21 +61,7 @@ namespace InteractiveConsole
                     continue;
                 }
 
-                if (command.Type.IsSubclassOf(typeof(BaseCommand)))
-                {
-                    ((BaseCommand)commandInstance).Printer = _printer;
-                    ((BaseCommand)commandInstance).InputHandler = _inputHandler;
-                }
-
-                var parameterProcessor = new ParameterProcessor(_inMemoryStorage)
-                {
-                    CommandInstance = commandInstance,
-                    ParserResult = parserResult,
-                    CommandInfo = command
-                };
-
-                var success = parameterProcessor.SetParameters();
-                if (!success)
+                if (!TrySetParameters(commandInstance, parserResult, command))
                 {
                     _printer.Print("Failed to set parameters");
                     continue;
@@ -89,6 +73,41 @@ namespace InteractiveConsole
                     _inMemoryStorage.Add(result, parserResult);
                 }
             }
+        }
+
+        private bool TryGetCommand(ParameterParserResult parserResult, out CommandInfo command)
+        {
+            command = _commandDiscovery
+               .AvailableCommands
+               .FirstOrDefault(x => x.Name == parserResult.CommandName);
+
+            return command != null;
+        }
+
+        private bool TryCreateCommandInstance(CommandInfo command, out BaseCommand commandInstance)
+        {
+            commandInstance = Container.Resolve(command.Type) as BaseCommand;
+            if (commandInstance != null)
+            {
+                commandInstance.Printer = _printer;
+                commandInstance.InputHandler = _inputHandler;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TrySetParameters(BaseCommand commandInstance, ParameterParserResult parserResult, CommandInfo command)
+        {
+            var parameterProcessor = new ParameterProcessor(_inMemoryStorage)
+            {
+                CommandInstance = commandInstance,
+                ParserResult = parserResult,
+                CommandInfo = command
+            };
+
+            return parameterProcessor.SetParameters();
         }
     }
 }
