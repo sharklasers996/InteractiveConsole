@@ -192,7 +192,8 @@ namespace InteractiveConsole
             }
             else
             {
-                if (instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
+                if (instanceProperty.PropertyType != typeof(object)
+                    && instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
                 {
                     errors.Add("Parameter type does not match");
                 }
