@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using InteractiveConsole.Attributes;
 using InteractiveConsole.Storage;
@@ -15,12 +16,18 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
-            Console.WriteLine($"Storage contains {_inMemoryStorage.Variables.Count} variables.");
-            Console.WriteLine(new string('-', 50));
+            if (!_inMemoryStorage.Variables.Any())
+            {
+                Printer.WriteLine().Info("Storage doesn't contain any variables.");
+                return null;
+            }
+
+            Printer.WriteLine().Info($"Storage contains {_inMemoryStorage.Variables.Count} variables.");
+            Printer.WriteLine().Info(new string('-', 50));
 
             foreach (var variable in _inMemoryStorage.Variables)
             {
-                Console.Write($"{variable.Id}: ");
+                Printer.Write().Info($"{variable.Id}: ");
                 var typeString = string.Empty;
                 if (variable.IsList)
                 {
@@ -56,11 +63,11 @@ namespace InteractiveConsole.Commands
                     }
                 }
 
-                Console.WriteLine($"{typeString} returned by {variable.ProducedByCommand}");
+                Printer.WriteLine().Info2($"{typeString} returned by {variable.ProducedByCommand}");
             }
 
-            Console.WriteLine(new string('-', 50));
-            Console.WriteLine();
+            Printer.WriteLine().Info(new string('-', 50));
+            Printer.NewLine();
 
             return null;
         }

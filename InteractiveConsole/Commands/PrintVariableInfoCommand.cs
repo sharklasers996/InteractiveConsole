@@ -12,7 +12,7 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
-            Console.Write($"Variable {Variable} is a ");
+            Printer.Write().Info($"Variable {Variable} is a ");
             string typeString;
             if (Variable.IsList)
             {
@@ -48,7 +48,7 @@ namespace InteractiveConsole.Commands
                 }
             }
 
-            Console.WriteLine($"{typeString} returned by {Variable.ProducedByCommand}");
+            Printer.WriteLine().Info2($"{typeString} returned by {Variable.ProducedByCommand}");
 
             return null;
         }

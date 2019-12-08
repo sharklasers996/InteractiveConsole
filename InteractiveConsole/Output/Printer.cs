@@ -1,9 +1,8 @@
 using System;
-using System.Threading;
 using System.Collections.Generic;
-using Colorful;
 using InteractiveConsole.Models;
-using Console = Colorful.Console;
+using Pastel;
+using Figgle;
 
 namespace InteractiveConsole.Output
 {
@@ -11,46 +10,86 @@ namespace InteractiveConsole.Output
     {
         private readonly PrinterTheme _theme;
 
+        private bool _writeLine = false;
+
         public Printer(PrinterTheme theme)
         {
             _theme = theme;
         }
 
-        public void PrintAscii(string text, string font)
+        public Printer Write()
         {
-            var figletFont = FigletFont.Parse(font);
-            var figlet = new Figlet(figletFont);
-            Console.WriteLine(figlet.ToAscii(text), _theme.Primary);
+            _writeLine = false;
+            return this;
         }
 
-        public void PrintHeader(string text)
+        public Printer WriteLine()
         {
-            Console.WriteLine(text, _theme.Primary);
+            _writeLine = true;
+            return this;
         }
 
-        public void PrintSubheader(string text)
+        private Action<string> ConsoleWrite
         {
-            Console.WriteLine(text, _theme.Primary);
+            get
+            {
+                if (_writeLine)
+                {
+                    return Console.WriteLine;
+                }
+
+                return Console.Write;
+            }
         }
 
-        public void Print(string text = null)
+        public void Ascii(string text)
         {
-            Console.WriteLine(text);
+            ConsoleWrite.Invoke(FiggleFonts.Standard.Render(text).Pastel(_theme.Highlight));
         }
 
-        public void Print(object obj)
+        public void Error(string text)
         {
-            Console.WriteLine(obj);
+            ConsoleWrite.Invoke(text.Pastel(_theme.Error));
         }
 
-        public void PrintCommands(List<CommandInfo> commands)
+        public void Highlight(string text)
         {
-            Console.WriteLine("Available commands");
-            Console.WriteLine(new string('-', 50));
+            ConsoleWrite.Invoke(text.Pastel(_theme.Highlight));
+        }
+
+        public void Info(string text)
+        {
+            ConsoleWrite.Invoke(text.Pastel(_theme.InfoPrimary));
+        }
+
+        public void Info2(string text)
+        {
+            ConsoleWrite.Invoke(text.Pastel(_theme.InfoSecondary));
+        }
+
+        public void Success(string text)
+        {
+            ConsoleWrite.Invoke(text.Pastel(_theme.Success));
+        }
+
+        public void Progress(string text)
+        {
+            ConsoleWrite.Invoke(text.Pastel(_theme.Progress));
+        }
+
+        public void NewLine()
+        {
+            Console.WriteLine();
+        }
+
+        public void Print(List<CommandInfo> commands)
+        {
+            Console.WriteLine("Available commands".Pastel(_theme.InfoPrimary));
+            Console.WriteLine(new string('-', 50).Pastel(_theme.InfoPrimary));
 
             foreach (var command in commands)
             {
-                Console.Write($"{command.NameWithoutSuffix} ");
+                Console.Write($"{command.NameWithoutSuffix} ".Pastel(_theme.InfoSecondary));
                 var optionsString = string.Empty;
                 foreach (var option in command.Options)
                 {
@@ -93,7 +132,8 @@ namespace InteractiveConsole.Output
                         }
                     }
 
-                    optionsString += $"{option.Name} ({requiredString}{typeString}), ";
+                    optionsString += option.Name.Pastel(_theme.InfoPrimary);
+                    optionsString += $" ({requiredString}{typeString}) ".Pastel(_theme.InfoSecondary);
                 }
 
                 Console.Write(optionsString.Trim(new[] { ' ', ',' }));
@@ -104,11 +144,11 @@ namespace InteractiveConsole.Output
                     Console.WriteLine($"\t{command.Description}");
                 }
             }
-            Console.WriteLine(new string('-', 50));
+            Console.WriteLine(new string('-', 50).Pastel(_theme.InfoPrimary));
             Console.WriteLine();
         }
 
-        public string PrintWithSelection(object item, Dictionary<string, string> availableActions)
+        public string Selection(object item, Dictionary<string, string> availableActions)
         {
             Console.WriteLine(item.ToString());
 
@@ -118,8 +158,9 @@ namespace InteractiveConsole.Output
                 selectionString += $"({keyValue.Key}) {keyValue.Value} | ";
             }
 
+            Console.WriteLine();
             selectionString = selectionString.Trim(new[] { ' ', '|' });
-            Console.WriteLine(selectionString, _theme.Highlight);
+            Console.WriteLine(selectionString.Pastel(_theme.Highlight));
 
             var keyInfo = Console.ReadKey(true);
             Console.SetCursorPosition(0, Console.CursorTop);
@@ -127,9 +168,10 @@ namespace InteractiveConsole.Output
             Console.SetCursorPosition(0, Console.CursorTop);
             while (!availableActions.TryGetValue(keyInfo.KeyChar.ToString(), out _))
             {
-                Console.WriteLine($"Selection '{keyInfo.KeyChar}' is not available");
+                Console.WriteLine($"Selection '{keyInfo.KeyChar}' is not available".Pastel(_theme.Error));
                 keyInfo = Console.ReadKey(true);
             }
+            Console.WriteLine();
 
             return keyInfo.KeyChar.ToString();
         }

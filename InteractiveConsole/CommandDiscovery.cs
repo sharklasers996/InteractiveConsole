@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using InteractiveConsole.Attributes;
 using InteractiveConsole.Models;
-using Console = Colorful.Console;
 using InteractiveConsole.Extensions;
 
 namespace InteractiveConsole

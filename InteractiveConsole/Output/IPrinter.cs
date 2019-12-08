@@ -5,12 +5,17 @@ namespace InteractiveConsole.Output
 {
     public interface IPrinter
     {
-        void PrintHeader(string text);
-        void PrintSubheader(string text);
-        void Print(string text = null);
-         void Print(object obj);
-        void PrintAscii(string text, string font);
-        void PrintCommands(List<CommandInfo> commands);
-        string PrintWithSelection(object item, Dictionary<string, string> availableActions);
+        Printer Write();
+        Printer WriteLine();
+        void Info(string text);
+        void Info2(string text);
+        void Success(string text);
+        void Progress(string text);
+        void Error(string text);
+        void Highlight(string text);
+        void Ascii(string text);
+        void Print(List<CommandInfo> commands);
+        string Selection(object item, Dictionary<string, string> availableActions);
+        void NewLine();
     }
 }

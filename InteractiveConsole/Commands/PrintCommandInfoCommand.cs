@@ -23,20 +23,20 @@ namespace InteractiveConsole.Commands
             var command = _commandDiscovery.AvailableCommands.FirstOrDefault(x => x.NameWithoutSuffix == CommandName);
             if (command == null)
             {
-                Console.WriteLine("Could not find command");
+                Printer.WriteLine().Error("Could not find command");
                 return null;
             }
 
             if (!command.Options.Any())
             {
-                Console.WriteLine("Command doesn't have any options");
+                Printer.WriteLine().Error("Command doesn't have any options");
                 return null;
             }
 
-            Console.WriteLine(command.NameWithoutSuffix);
+            Printer.WriteLine().Info(command.NameWithoutSuffix);
             foreach (var option in command.Options)
             {
-                Console.Write($"\t{option.Name} ");
+                Printer.Write().Info($"\t{option.Name} ");
                 var requiredString = option.Required ? "required " : string.Empty;
 
                 var typeString = string.Empty;
@@ -76,7 +76,7 @@ namespace InteractiveConsole.Commands
                     }
                 }
 
-                Console.WriteLine($"({requiredString}{typeString})");
+                Printer.WriteLine().Info2($"({requiredString}{typeString})");
                 if (!option.AvailableValues.Any())
                 {
                     continue;
@@ -84,12 +84,12 @@ namespace InteractiveConsole.Commands
 
                 foreach (var value in option.AvailableValues)
                 {
-                    Console.WriteLine($"\t\t{value}");
+                    Printer.WriteLine().Info2($"\t\t{value}");
                 }
             }
 
-            Console.WriteLine();
-            Console.WriteLine(command.Description);
+            Printer.NewLine();
+            Printer.WriteLine().Info(command.Description);
 
             return null;
         }

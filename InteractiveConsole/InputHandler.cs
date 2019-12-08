@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using InteractiveConsole.Extensions;
 using InteractiveConsole.Helpers;
 using InteractiveConsole.Output;
-using Console = Colorful.Console;
 
 namespace InteractiveConsole
 {

@@ -4,6 +4,7 @@ using Unity;
 using InteractiveConsole.Output;
 using InteractiveConsole.Storage;
 using InteractiveConsole.Models;
+using System.Collections.Generic;
 
 namespace InteractiveConsole
 {
@@ -34,9 +35,9 @@ namespace InteractiveConsole
         {
             if (!String.IsNullOrEmpty(Title))
             {
-                _printer.PrintAscii(Title, PrinterFonts.Big);
+                _printer.Ascii(Title);
             }
-            _printer.PrintCommands(_commandDiscovery.AvailableCommands);
+            _printer.Print(_commandDiscovery.AvailableCommands);
 
             while (true)
             {
@@ -47,25 +48,26 @@ namespace InteractiveConsole
 
                     if (!TryGetCommand(parserResult, out var command))
                     {
-                        _printer.Print("Could not find command");
+                        _printer.WriteLine().Error("Could not find command");
                         continue;
                     }
 
                     if (!TryCreateCommandInstance(command, out var commandInstance))
                     {
-                        _printer.Print("Could not create command instance");
+                        _printer.WriteLine().Error("Could not create command instance");
                         continue;
                     }
 
                     if (!commandInstance.IsValid())
                     {
-                        _printer.Print("Command options are invalid");
+                        _printer.WriteLine().Error("Command options are invalid");
                         continue;
                     }
 
-                    if (!TrySetParameters(commandInstance, parserResult, command))
+                    if (!TrySetParameters(commandInstance, parserResult, command, out var errors))
                     {
-                        _printer.Print("Failed to set parameters");
+                        _printer.WriteLine().Error("Failed to set parameters");
+                        errors.ForEach(e => _printer.WriteLine().Error(e));
                         continue;
                     }
 
@@ -77,7 +79,7 @@ namespace InteractiveConsole
                 }
                 catch (Exception ex)
                 {
-                    _printer.Print($"Error: {ex.Message}\n{ex.StackTrace}");
+                    _printer.WriteLine().Error($"Error: {ex.Message}\n{ex.StackTrace}");
                 }
             }
         }
@@ -105,7 +107,7 @@ namespace InteractiveConsole
             return false;
         }
 
-        private bool TrySetParameters(BaseCommand commandInstance, ParameterParserResult parserResult, CommandInfo command)
+        private bool TrySetParameters(BaseCommand commandInstance, ParameterParserResult parserResult, CommandInfo command, out List<string> errors)
         {
             var parameterProcessor = new ParameterProcessor(_inMemoryStorage)
             {
@@ -114,7 +116,9 @@ namespace InteractiveConsole
                 CommandInfo = command
             };
 
-            return parameterProcessor.SetParameters();
+            errors = parameterProcessor.SetParameters();
+
+            return errors.Count == 0;
         }
     }
 }
