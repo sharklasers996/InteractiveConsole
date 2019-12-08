@@ -332,6 +332,11 @@ namespace InteractiveConsole
 
         private void PreviousCommandInHistory()
         {
+            if (_history.Count == 0)
+            {
+                return;
+            }
+
             _historyIndex--;
             if (_historyIndex < 0)
             {
@@ -342,6 +347,11 @@ namespace InteractiveConsole
 
         private void NextCommandInHistory()
         {
+            if (_history.Count == 0)
+            {
+                return;
+            }
+            
             _historyIndex++;
             if (_historyIndex >= _history.Count)
             {
