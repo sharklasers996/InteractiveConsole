@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace InteractiveConsole.Models
@@ -8,6 +7,17 @@ namespace InteractiveConsole.Models
         public string Name { get; set; }
         public bool Required { get; set; }
         public List<string> AvailableValues { get; set; }
-        public Type Type { get; set; }
+        public bool IsNumber { get; set; }
+        public bool IsString { get; set; }
+        public bool IsEnum { get; set; }
+        public bool IsCustomObject { get; set; }
+        public string ObjectName { get; set; }
+
+        public bool IsList { get; set; }
+        public bool IsListItemNumber { get; set; }
+        public bool IsListItemString { get; set; }
+        public bool IsListItemEnum { get; set; }
+        public bool IsListItemCustomObject { get; set; }
+        public string ListItemObjectName { get; set; }
     }
 }

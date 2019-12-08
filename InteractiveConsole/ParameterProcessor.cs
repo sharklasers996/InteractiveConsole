@@ -22,14 +22,14 @@ namespace InteractiveConsole
 
         public bool SetParameters()
         {
-            Console.WriteLine($"Command: {ParserResult.CommandName}");
-            if (ParserResult.Parameters != null)
-            {
-                foreach (var param in ParserResult.Parameters)
-                {
-                    Console.WriteLine($"{param.Name}={param.Value}");
-                }
-            }
+            // Console.WriteLine($"Command: {ParserResult.CommandName}");
+            // if (ParserResult.Parameters != null)
+            // {
+            //     foreach (var param in ParserResult.Parameters)
+            //     {
+            //         Console.WriteLine($"{param.Name}={param.Value}");
+            //     }
+            // }
 
             var commandType = CommandInstance.GetType();
             foreach (var option in CommandInfo.Options.OrderBy(x => x.Required))
@@ -50,10 +50,15 @@ namespace InteractiveConsole
                 var inMemoryVariable = _InMemoryStorage.TryGetVariable(parameter.Value);
                 if (inMemoryVariable != null)
                 {
-                    return SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
+                    if (!SetInMemoryVariableValue(instanceProperty, inMemoryVariable))
+                    {
+                        return false;
+                    }
                 }
-
-                return SetParameterValue(instanceProperty, parameter);
+                else if (!SetParameterValue(instanceProperty, parameter))
+                {
+                    return false;
+                }
             }
 
             return true;

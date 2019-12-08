@@ -1,13 +1,12 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using InteractiveConsole.Attributes;
-using InteractiveConsole.Extensions;
 
 namespace InteractiveConsole.Commands
 {
-    [Command]
-    public class PrintCommandInfoCommand : BaseCommand//, ICommand
+    [Command(description: "Prints information about command and its options")]
+    public class PrintCommandInfoCommand : BaseCommand
     {
         [CommandParameter]
         public string CommandName { get; set; }
@@ -24,34 +23,73 @@ namespace InteractiveConsole.Commands
             var command = _commandDiscovery.AvailableCommands.FirstOrDefault(x => x.NameWithoutSuffix == CommandName);
             if (command == null)
             {
-                Printer.Print("Could not find command");
+                Console.WriteLine("Could not find command");
                 return null;
             }
 
             if (!command.Options.Any())
             {
-                Printer.Print("Command doesn't have any options");
+                Console.WriteLine("Command doesn't have any options");
                 return null;
             }
 
-            Printer.Print($"Command {command.NameWithoutSuffix} has {command.Options.Count} options");
+            Console.WriteLine(command.NameWithoutSuffix);
             foreach (var option in command.Options)
             {
+                Console.Write($"\t{option.Name} ");
+                var requiredString = option.Required ? "required " : string.Empty;
 
-                Printer.Print($"Option {option.Name}, required = {option.Required}");
-                if (option.Type.IsGenericType
-                                && option.Type.GetGenericTypeDefinition() == typeof(List<>))
+                var typeString = string.Empty;
+                if (option.IsList)
                 {
-                    Printer.Print($"Option {option.Name} is a list");
+                    if (option.IsListItemCustomObject)
+                    {
+                        typeString = $"list of {option.ListItemObjectName} objects";
+                    }
+                    else
+                    {
+                        typeString = option switch
+                        {
+                            var o when o.IsListItemEnum => "list of enums",
+                            var o when o.IsListItemNumber => "list of numbers",
+                            var o when o.IsListItemString => "list of strings",
+                            _ => "list of custom objects"
+                        };
+                    }
+                }
+                else
+                {
+                    if (option.IsCustomObject)
+                    {
+                        typeString = $"{option.ObjectName} object";
+                    }
+                    else
+                    {
+                        typeString = option switch
+                        {
+                            var o when o.IsEnum => "enum",
+                            var o when o.IsList => "list",
+                            var o when o.IsNumber => "number",
+                            var o when o.IsString => "string",
+                            _ => "object"
+                        };
+                    }
                 }
 
+                Console.WriteLine($"({requiredString}{typeString})");
                 if (!option.AvailableValues.Any())
                 {
                     continue;
                 }
 
-                Printer.Print($"Option {option.Name} has available values: {string.Join(',', option.AvailableValues)}");
+                foreach (var value in option.AvailableValues)
+                {
+                    Console.WriteLine($"\t\t{value}");
+                }
             }
+
+            Console.WriteLine();
+            Console.WriteLine(command.Description);
 
             return null;
         }

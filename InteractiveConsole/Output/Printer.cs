@@ -1,5 +1,5 @@
+using System;
 using System.Threading;
-using System.Linq;
 using System.Collections.Generic;
 using Colorful;
 using InteractiveConsole.Models;
@@ -10,14 +10,10 @@ namespace InteractiveConsole.Output
     public class Printer : IPrinter
     {
         private readonly PrinterTheme _theme;
-        private static SynchronizationContext _ctx;
-        private static Thread _current;
 
         public Printer(PrinterTheme theme)
         {
             _theme = theme;
-            _ctx = SynchronizationContext.Current;
-            _current = Thread.CurrentThread;
         }
 
         public void PrintAscii(string text, string font)
@@ -49,17 +45,66 @@ namespace InteractiveConsole.Output
 
         public void PrintCommands(List<CommandInfo> commands)
         {
-            Console.WriteLine("Available commands:", _theme.Secondary);
-            Console.WriteLine();
+            Console.WriteLine("Available commands");
+            Console.WriteLine(new string('-', 50));
 
             foreach (var command in commands)
             {
-                Console.WriteLine($"\t{command.NameWithoutSuffix}", _theme.SecondaryVariant);
+                Console.Write($"{command.NameWithoutSuffix} ");
+                var optionsString = string.Empty;
                 foreach (var option in command.Options)
                 {
-                    Console.WriteLine($"\t\t> {option.Name}", _theme.Normal);
+                    var requiredString = option.Required ? "required " : string.Empty;
+
+                    var typeString = string.Empty;
+                    if (option.IsList)
+                    {
+                        if (option.IsListItemCustomObject)
+                        {
+                            typeString = $"list of {option.ListItemObjectName} objects";
+                        }
+                        else
+                        {
+                            typeString = option switch
+                            {
+                                var o when o.IsListItemEnum => "list of enums",
+                                var o when o.IsListItemNumber => "list of numbers",
+                                var o when o.IsListItemString => "list of strings",
+                                _ => "list of custom objects"
+                            };
+                        }
+                    }
+                    else
+                    {
+                        if (option.IsCustomObject)
+                        {
+                            typeString = $"{option.ObjectName} object";
+                        }
+                        else
+                        {
+                            typeString = option switch
+                            {
+                                var o when o.IsEnum => "enum",
+                                var o when o.IsList => "list",
+                                var o when o.IsNumber => "number",
+                                var o when o.IsString => "string",
+                                _ => "object"
+                            };
+                        }
+                    }
+
+                    optionsString += $"{option.Name} ({requiredString}{typeString}), ";
+                }
+
+                Console.Write(optionsString.Trim(new[] { ' ', ',' }));
+                Console.WriteLine();
+
+                if (!String.IsNullOrEmpty(command.Description))
+                {
+                    Console.WriteLine($"\t{command.Description}");
                 }
             }
+            Console.WriteLine(new string('-', 50));
             Console.WriteLine();
         }
 

@@ -1,4 +1,6 @@
+using System.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace InteractiveConsole.Extensions
 {
@@ -23,6 +25,22 @@ namespace InteractiveConsole.Extensions
                 default:
                     return false;
             }
+        }
+
+        public static bool IsString(this Type type)
+        {
+            return type.Equals(typeof(string));
+        }
+
+        public static bool IsList(this Type type)
+        {
+            return type.IsGenericType
+                && type.GetGenericTypeDefinition() == typeof(List<>);
+        }
+
+        public static Type GetListItemType(this Type type)
+        {
+            return type.GetGenericArguments().FirstOrDefault();
         }
     }
 }

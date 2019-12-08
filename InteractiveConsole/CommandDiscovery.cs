@@ -5,6 +5,7 @@ using System.Reflection;
 using InteractiveConsole.Attributes;
 using InteractiveConsole.Models;
 using Console = Colorful.Console;
+using InteractiveConsole.Extensions;
 
 namespace InteractiveConsole
 {
@@ -19,43 +20,30 @@ namespace InteractiveConsole
             var commands = GetCommands();
             foreach (var cmd in commands)
             {
-                var commandOptions = GetCommandOptions(cmd)
+                cmd.Options = GetCommandOptions(cmd.Type)
                     .OrderBy(x => x.Required)
                     .ToList();
-                AvailableCommands.Add(new CommandInfo
-                {
-                    Name = cmd.Name,
-                    Options = commandOptions,
-                    Type = cmd
-                });
+                AvailableCommands.Add(cmd);
             }
         }
 
-        public void PrintAvailableCommands()
-        {
-            Console.WriteLine("Available commands:");
-            Console.WriteLine();
-
-            foreach (var command in AvailableCommands)
-            {
-                Console.WriteLine(command.NameWithoutSuffix);
-                foreach (var option in command.Options)
-                {
-                    Console.WriteLine($"\t> {option.Name}");
-                }
-            }
-        }
-
-        private IEnumerable<Type> GetCommands()
+        private IEnumerable<CommandInfo> GetCommands()
         {
             var types = Assembly.GetEntryAssembly().GetTypes().ToList();
             types.AddRange(Assembly.GetCallingAssembly().GetTypes());
 
             foreach (var type in types)
             {
-                if (type.GetCustomAttribute(typeof(CommandAttribute)) != null)
+                var attribute = type.GetCustomAttribute(typeof(CommandAttribute));
+                if (attribute != null)
                 {
-                    yield return type;
+                    var commandAttribute = attribute as CommandAttribute;
+                    yield return new CommandInfo
+                    {
+                        Description = commandAttribute.Description,
+                        Name = type.Name,
+                        Type = type
+                    };
                 }
             }
         }
@@ -67,22 +55,53 @@ namespace InteractiveConsole
             {
                 if (property.GetCustomAttribute(typeof(CommandParameterAttribute)) != null)
                 {
+                    var propertyType = property.PropertyType;
                     var optionSelections = new List<string>();
-                    if (property.PropertyType.IsEnum)
+                    if (propertyType.IsEnum)
                     {
                         foreach (var e in Enum.GetValues(property.PropertyType))
                         {
                             optionSelections.Add(e.ToString());
                         }
                     }
-
-                    yield return new CommandOptionInfo
+                    var optionInfo = new CommandOptionInfo
                     {
                         Name = property.Name,
                         Required = property.GetCustomAttribute(typeof(RequiredAttribute)) != null,
                         AvailableValues = optionSelections,
-                        Type = property.PropertyType
+                        IsList = propertyType.IsList(),
+                        IsNumber = propertyType.IsNumericType(),
+                        IsString = propertyType.IsString(),
+                        IsEnum = propertyType.IsEnum
                     };
+
+                    if (optionInfo.IsList)
+                    {
+                        var listItemType = propertyType.GetListItemType();
+                        optionInfo.IsListItemNumber = listItemType.IsNumericType();
+                        optionInfo.IsListItemString = listItemType.IsString();
+                        optionInfo.IsListItemEnum = listItemType.IsEnum;
+
+                        if (!optionInfo.IsListItemNumber
+                            && !optionInfo.IsListItemString
+                            && !optionInfo.IsListItemEnum)
+                        {
+                            optionInfo.IsListItemCustomObject = true;
+                            optionInfo.ListItemObjectName = listItemType.Name;
+                        }
+                    }
+
+                    if (!optionInfo.IsList
+                        && !optionInfo.IsNumber
+                        && !optionInfo.IsString
+                        && !optionInfo.IsEnum)
+                    {
+                        optionInfo.IsCustomObject = true;
+                        optionInfo.ObjectName = propertyType.Name;
+                    }
+
+
+                    yield return optionInfo;
                 }
             }
         }

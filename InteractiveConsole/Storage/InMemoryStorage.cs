@@ -20,11 +20,22 @@ namespace InteractiveConsole.Storage
             };
 
             var valueType = value.GetType();
-            if (valueType.IsGenericType 
-                && valueType.GetGenericTypeDefinition() == typeof(List<>))
+            if (valueType.IsList())
             {
                 variable.IsList = true;
                 variable.Length = (value as IList).Count;
+
+                var listItemType = valueType.GetListItemType();
+
+                variable.IsListItemNumber = listItemType.IsNumericType();
+                variable.IsListItemString = listItemType.IsString();
+
+                if (!variable.IsListItemNumber
+                    && !variable.IsListItemString)
+                {
+                    variable.IsListItemCustomObject = true;
+                    variable.ListItemObjectName = listItemType.Name;
+                }
             }
 
             if (valueType.IsNumericType())
@@ -32,9 +43,17 @@ namespace InteractiveConsole.Storage
                 variable.IsNumber = true;
             }
 
-            if (value is string _)
+            if (valueType.IsString())
             {
                 variable.IsString = true;
+            }
+
+            if (!variable.IsList
+                && !variable.IsNumber
+                && !variable.IsString)
+            {
+                variable.IsCustomObject = true;
+                variable.ObjectName = valueType.Name;
             }
 
             Variables.Add(variable);

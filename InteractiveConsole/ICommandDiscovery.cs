@@ -7,6 +7,5 @@ namespace InteractiveConsole
     public interface ICommandDiscovery
     {
         List<CommandInfo> AvailableCommands { get; }
-        void PrintAvailableCommands();
     }
 }

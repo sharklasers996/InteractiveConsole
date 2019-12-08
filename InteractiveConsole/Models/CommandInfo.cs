@@ -19,5 +19,6 @@ namespace InteractiveConsole.Models
         public string NameWithoutSuffix { get; private set; }
         public List<CommandOptionInfo> Options { get; set; }
         public Type Type { get; set; }
+        public string Description { get; set; }
     }
 }
