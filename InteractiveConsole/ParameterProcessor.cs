@@ -5,6 +5,7 @@ using InteractiveConsole.Models;
 using InteractiveConsole.Extensions;
 using InteractiveConsole.Storage;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace InteractiveConsole
 {
@@ -52,10 +53,21 @@ namespace InteractiveConsole
                 var inMemoryVariable = _InMemoryStorage.TryGetVariable(parameter.Value);
                 if (inMemoryVariable != null)
                 {
-                    var inMemoryVarSetErrors = SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
-                    if (inMemoryVarSetErrors.Any())
+                    if (parameter.IndexFrom != null)
                     {
-                        return inMemoryVarSetErrors;
+                        var inMemoryVarSetErrors = SetInMemoryVariableIndexValue(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom, parameter.IndexTo);
+                        if (inMemoryVarSetErrors.Any())
+                        {
+                            return inMemoryVarSetErrors;
+                        }
+                    }
+                    else
+                    {
+                        var inMemoryVarSetErrors = SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
+                        if (inMemoryVarSetErrors.Any())
+                        {
+                            return inMemoryVarSetErrors;
+                        }
                     }
                 }
                 else
@@ -69,6 +81,92 @@ namespace InteractiveConsole
             }
 
             return errors;
+        }
+
+        private List<string> SetInMemoryVariableIndexValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int indexFrom, int? indexTo)
+        {
+            if (!inMemoryVariable.IsList)
+            {
+                return new List<string> { "Index can only be used on list" };
+            }
+
+            if (instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
+            {
+                return new List<string> { "Parameter type does not match" };
+            }
+
+            var listType = inMemoryVariable.Value.GetType();
+            var listItemType = listType.GetListItemType();
+            var instancedList = (IList)typeof(List<>)
+                .MakeGenericType(listItemType)
+                .GetConstructor(System.Type.EmptyTypes)
+                .Invoke(null);
+
+            int listLength = (int)listType.GetProperty("Count").GetValue(inMemoryVariable.Value, null);
+
+            if (indexFrom > listLength)
+            {
+                return new List<string> { "Index is out of bounds" };
+            }
+
+            if (indexTo != null
+                && indexTo >= listLength)
+            {
+                return new List<string> { "Index is out of bounds" };
+            }
+
+            for (var i = 0; i < listLength; i++)
+            {
+                if (i < indexFrom)
+                {
+                    continue;
+                }
+
+                var listItemValue = listType.GetProperty("Item").GetValue(inMemoryVariable.Value, new object[] { i });
+                var listItemValueType = listItemValue.GetType();
+
+                object value;
+                if (instanceProperty.PropertyType.GetListItemType().IsNumericType()
+                    && listItemValueType.IsNumericType())
+                {
+                    value = int.Parse(listItemValue.ToString());
+                }
+                else if (instanceProperty.PropertyType == typeof(InMemoryStorageVariable))
+                {
+                    value = listItemValue;
+                }
+                else
+                {
+                    if (instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
+                    {
+                        return new List<string> { "Parameter type does not match" };
+                    }
+                    else
+                    {
+                        value = listItemValue;
+                    }
+                }
+
+                if (i == indexFrom)
+                {
+                    instancedList.Add(value);
+                    if (indexTo == null)
+                    {
+                        break;
+                    }
+                    continue;
+                }
+
+                if (i > indexTo)
+                {
+                    break;
+                }
+
+                instancedList.Add(value);
+            }
+
+            instanceProperty.SetValue(CommandInstance, instancedList);
+            return new List<string>();
         }
 
         private List<string> SetInMemoryVariableValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable)
@@ -86,7 +184,7 @@ namespace InteractiveConsole
             }
             else
             {
-                if (instanceProperty.PropertyType != inMemoryVariable.GetType())
+                if (instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
                 {
                     errors.Add("Parameter type does not match");
                 }

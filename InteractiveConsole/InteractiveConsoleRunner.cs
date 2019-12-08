@@ -38,7 +38,7 @@ namespace InteractiveConsole
                 _printer.Ascii(Title);
             }
             _printer.Print(_commandDiscovery.AvailableCommands);
-
+            
             while (true)
             {
                 try

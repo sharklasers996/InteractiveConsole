@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 namespace InteractiveConsole
@@ -25,14 +26,31 @@ namespace InteractiveConsole
 
             var parametersString = input.Substring(firstSpaceIndex);
 
-            var parameterMatches = Regex.Matches(parametersString, "\\s(?<parameterName>\\w+)=((?<parameterValue>[A-Za-z0-9~!@#$%&*\\(\\)-\\+]+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")");
+            var parameterMatches = Regex.Matches(parametersString, "\\s(?<parameterName>\\w+)=((?<parameterValue>[A-Za-z0-9~!@#$%&*\\(\\)-\\+\\[\\]\\.]+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")");
             foreach (Match match in parameterMatches)
             {
-                result.Parameters.Add(new Parameter
+                var value = match.Groups["parameterValue"].ToString();
+
+                var param = new Parameter
                 {
                     Name = match.Groups["parameterName"].ToString(),
                     Value = match.Groups["parameterValue"].ToString()
-                });
+                };
+
+                var indexMatch = Regex.Match(value, @"#(?<parameterValue>\d+)\[(?<indexFrom>\d+)(\.\.)?(?<indexTo>\d+)?\]?");
+                if (indexMatch.Success)
+                {
+                    var indexFromString = indexMatch.Groups["indexFrom"].ToString();
+                    var indexToString = indexMatch.Groups["indexTo"].ToString();
+
+                    param.IndexFrom = int.Parse(indexFromString);
+                    if (!String.IsNullOrEmpty(indexToString))
+                    {
+                        param.IndexTo = int.Parse(indexToString);
+                    }
+                }
+
+                result.Parameters.Add(param);
             }
 
             return result;
