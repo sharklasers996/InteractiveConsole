@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using InteractiveConsole.Attributes;
+using InteractiveConsole.Extensions;
 using InteractiveConsole.Storage;
 
 namespace InteractiveConsole.Commands
@@ -8,37 +10,54 @@ namespace InteractiveConsole.Commands
     public class PrintVariableInfoCommand : BaseCommand
     {
         [CommandParameter]
-        public InMemoryStorageVariable Variable { get; set; }
+        public object Variable { get; set; }
 
         public override object Execute()
         {
-            Printer.Write().Info($"Variable {Variable} is a ");
-            string typeString;
-            if (Variable.IsList)
+            if (!(Variable is InMemoryStorageVariable variable))
             {
-                if (Variable.IsListItemCustomObject)
+                if (Variable.GetType().IsList())
                 {
-                    typeString = $"list of {Variable.Length} {Variable.ListItemObjectName} objects";
+                    foreach (var v in (IList)Variable)
+                    {
+                        Printer.WriteLine().Info(v.ToString());
+                    }
                 }
                 else
                 {
-                    typeString = Variable switch
+                    Printer.WriteLine().Info(Variable.ToString());
+                }
+                return null;
+            }
+
+
+            Printer.Write().Info($"Variable {Variable} is a ");
+            string typeString;
+            if (variable.IsList)
+            {
+                if (variable.IsListItemCustomObject)
+                {
+                    typeString = $"list of {variable.Length} {variable.ListItemObjectName} objects";
+                }
+                else
+                {
+                    typeString = variable switch
                     {
-                        var o when o.IsListItemNumber => $"list of {Variable.Length} numbers",
-                        var o when o.IsListItemString => $"list of {Variable.Length} strings",
-                        _ => $"list of {Variable.Length} custom objects"
+                        var o when o.IsListItemNumber => $"list of {variable.Length} numbers",
+                        var o when o.IsListItemString => $"list of {variable.Length} strings",
+                        _ => $"list of {variable.Length} custom objects"
                     };
                 }
             }
             else
             {
-                if (Variable.IsCustomObject)
+                if (variable.IsCustomObject)
                 {
-                    typeString = $"{Variable.ObjectName} object";
+                    typeString = $"{variable.ObjectName} object";
                 }
                 else
                 {
-                    typeString = Variable switch
+                    typeString = variable switch
                     {
                         var o when o.IsList => "list",
                         var o when o.IsNumber => "number",
@@ -48,7 +67,7 @@ namespace InteractiveConsole.Commands
                 }
             }
 
-            Printer.WriteLine().Info2($"{typeString} returned by {Variable.ProducedByCommand}");
+            Printer.WriteLine().Info2($"{typeString} returned by {variable.ProducedByCommand}");
 
             return null;
         }

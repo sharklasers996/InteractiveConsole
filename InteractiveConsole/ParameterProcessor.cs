@@ -90,11 +90,6 @@ namespace InteractiveConsole
                 return new List<string> { "Index can only be used on list" };
             }
 
-            if (instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
-            {
-                return new List<string> { "Parameter type does not match" };
-            }
-
             var listType = inMemoryVariable.Value.GetType();
             var listItemType = listType.GetListItemType();
             var instancedList = (IList)typeof(List<>)
@@ -115,6 +110,7 @@ namespace InteractiveConsole
                 return new List<string> { "Index is out of bounds" };
             }
 
+            var addedValues = new List<object>();
             for (var i = 0; i < listLength; i++)
             {
                 if (i < indexFrom)
@@ -137,7 +133,8 @@ namespace InteractiveConsole
                 }
                 else
                 {
-                    if (instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
+                    if (instanceProperty.PropertyType != typeof(object)
+                        && instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
                     {
                         return new List<string> { "Parameter type does not match" };
                     }
@@ -150,6 +147,7 @@ namespace InteractiveConsole
                 if (i == indexFrom)
                 {
                     instancedList.Add(value);
+                    addedValues.Add(value);
                     if (indexTo == null)
                     {
                         break;
@@ -163,9 +161,19 @@ namespace InteractiveConsole
                 }
 
                 instancedList.Add(value);
+                addedValues.Add(value);
             }
 
-            instanceProperty.SetValue(CommandInstance, instancedList);
+            if (indexTo == null
+                && instancedList.Count == 1)
+            {
+                instanceProperty.SetValue(CommandInstance, addedValues.FirstOrDefault());
+            }
+            else
+            {
+                instanceProperty.SetValue(CommandInstance, instancedList);
+            }
+
             return new List<string>();
         }
 
