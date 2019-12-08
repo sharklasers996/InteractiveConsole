@@ -10,23 +10,30 @@ namespace InteractiveConsole
     {
         private string _title;
         private readonly IUnityContainer _unityContainer;
+        private PrinterTheme _theme = PrinterThemes.Default;
 
-        public void Run()
+        private void ConfigureContainer()
         {
-            var runner = _unityContainer.Resolve<InteractiveConsoleRunner>();
-            runner.Container = _unityContainer;
-            runner.Title = _title;
-
-            runner.Run();
+            _unityContainer.RegisterSingleton<IInMemoryStorage, InMemoryStorage>();
+            _unityContainer.RegisterType<ICommandDiscovery, CommandDiscovery>();
+            _unityContainer.RegisterType<IInputHandler, InputHandler>(new InjectionConstructor(new AutoCompleteHandler(), _theme));
+            _unityContainer.RegisterType<IPrinter, Printer>(new InjectionConstructor(_theme));
         }
 
         public InteractiveConsoleBuilder()
         {
             _unityContainer = new UnityContainer();
-            _unityContainer.RegisterSingleton<IInMemoryStorage, InMemoryStorage>();
-            _unityContainer.RegisterType<ICommandDiscovery, CommandDiscovery>();
-            _unityContainer.RegisterType<IInputHandler, InputHandler>(new InjectionConstructor(new AutoCompleteHandler(), new PrinterThemes().Default));
-            _unityContainer.RegisterType<IPrinter, Printer>(new InjectionConstructor(new PrinterThemes().Default));
+        }
+
+        public void Run()
+        {
+            ConfigureContainer();
+
+            var runner = _unityContainer.Resolve<InteractiveConsoleRunner>();
+            runner.Container = _unityContainer;
+            runner.Title = _title;
+
+            runner.Run();
         }
 
         public InteractiveConsoleBuilder WithTitle(string title)
@@ -38,6 +45,12 @@ namespace InteractiveConsole
         public InteractiveConsoleBuilder WithServices(Action<IUnityContainer> containerFunc)
         {
             containerFunc.Invoke(_unityContainer);
+            return this;
+        }
+
+        public InteractiveConsoleBuilder WithTheme(PrinterTheme theme)
+        {
+            _theme = theme;
             return this;
         }
     }
