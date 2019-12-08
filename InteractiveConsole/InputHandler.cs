@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Drawing;
 using System;
 using System.Collections.Generic;
@@ -101,6 +102,46 @@ namespace InteractiveConsole
             Console.Write(_text.ToString());
 
             return ReadLine(masked).Replace(prompt, string.Empty);
+        }
+
+        public List<int> NumberSelection(string prompt)
+        {
+            _text.Clear();
+            _text.Append(prompt);
+
+            _cursorLimitLeft = _text.Length;
+            _cursorLimitRight = _text.Length;
+            _cursorPosition = _text.Length;
+
+            Console.Write(_text.ToString());
+
+            var numberStringList = ReadLine()
+                .Replace(prompt, string.Empty)
+                .Split(' ')
+                .ToList();
+
+            var numbersList = new List<int>();
+            foreach (var numberString in numberStringList)
+            {
+                if (int.TryParse(numberString, out int number))
+                {
+                    numbersList.Add(number);
+                    continue;
+                }
+                var rangeMatch = Regex.Match(numberString, @"\[(?<from>\d+)..(?<to>\d+)\]");
+                if (rangeMatch.Success)
+                {
+                    var from = int.Parse(rangeMatch.Groups["from"].ToString());
+                    var to = int.Parse(rangeMatch.Groups["to"].ToString());
+
+                    for (var i = from; i <= to; i++)
+                    {
+                        numbersList.Add(i);
+                    }
+                }
+            }
+
+            return numbersList;
         }
 
         private void Complete(bool next)
