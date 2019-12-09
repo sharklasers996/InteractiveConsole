@@ -13,6 +13,7 @@ namespace InteractiveConsole.Output
         void Progress(string text);
         void Error(string text);
         void Highlight(string text);
+        void None(string text);
         void Ascii(string text);
         void Print(List<CommandInfo> commands);
         string Selection(object item, Dictionary<string, string> availableActions);
