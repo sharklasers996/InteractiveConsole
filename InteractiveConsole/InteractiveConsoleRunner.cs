@@ -58,18 +58,19 @@ namespace InteractiveConsole
                         continue;
                     }
 
-                    if (!commandInstance.IsValid())
-                    {
-                        _printer.WriteLine().Error("Command options are invalid");
-                        continue;
-                    }
-
                     if (!TrySetParameters(commandInstance, parserResult, command, out var errors))
                     {
                         _printer.WriteLine().Error("Failed to set parameters");
                         errors.ForEach(e => _printer.WriteLine().Error(e));
                         continue;
                     }
+
+                    if (!commandInstance.IsValid())
+                    {
+                        _printer.WriteLine().Error("Command options are invalid");
+                        continue;
+                    }
+
 
                     var result = commandInstance.Execute();
                     if (result != null)
