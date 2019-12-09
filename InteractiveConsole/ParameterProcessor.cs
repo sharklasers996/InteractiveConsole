@@ -9,6 +9,7 @@ using System.Collections;
 
 namespace InteractiveConsole
 {
+    // TODO: clean up
     public class ParameterProcessor
     {
         public BaseCommand CommandInstance { get; set; }
@@ -133,14 +134,29 @@ namespace InteractiveConsole
                 }
                 else
                 {
-                    if (instanceProperty.PropertyType != typeof(object)
-                        && instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
+                    if (instanceProperty.PropertyType.IsList())
                     {
-                        return new List<string> { "Parameter type does not match" };
+                        if (instanceProperty.PropertyType.GetListItemType() != typeof(object)
+                            && instanceProperty.PropertyType.GetListItemType() != listItemValueType)
+                        {
+                            return new List<string> { "Parameter type does not match" };
+                        }
+                        else
+                        {
+                            value = listItemValue;
+                        }
                     }
                     else
                     {
-                        value = listItemValue;
+                        if (instanceProperty.PropertyType != typeof(object)
+                            && instanceProperty.PropertyType != listItemValueType)
+                        {
+                            return new List<string> { "Parameter type does not match" };
+                        }
+                        else
+                        {
+                            value = listItemValue;
+                        }
                     }
                 }
 
