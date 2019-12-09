@@ -35,7 +35,9 @@ namespace InteractiveConsole
         {
             if (!String.IsNullOrEmpty(Title))
             {
+                _printer.NewLine();
                 _printer.Ascii(Title);
+                _printer.NewLine();
             }
             _printer.Print(_commandDiscovery.AvailableCommands);
             

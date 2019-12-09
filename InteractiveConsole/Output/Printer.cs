@@ -97,7 +97,7 @@ namespace InteractiveConsole.Output
         public void Print(List<CommandInfo> commands)
         {
             Console.WriteLine("Available commands".Pastel(_theme.InfoPrimary));
-            Console.WriteLine(new string('-', 50).Pastel(_theme.InfoPrimary));
+            Console.WriteLine(new string('_', 50).Pastel(_theme.InfoPrimary));
 
             foreach (var command in commands)
             {
@@ -153,10 +153,10 @@ namespace InteractiveConsole.Output
 
                 if (!String.IsNullOrEmpty(command.Description))
                 {
-                    Console.WriteLine($"\t{command.Description}");
+                    Console.WriteLine($"{command.Description}");
                 }
+                Console.WriteLine(new string('_', 50).Pastel(_theme.InfoPrimary));
             }
-            Console.WriteLine(new string('-', 50).Pastel(_theme.InfoPrimary));
             Console.WriteLine();
         }
 
