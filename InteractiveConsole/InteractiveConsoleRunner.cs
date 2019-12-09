@@ -40,7 +40,7 @@ namespace InteractiveConsole
                 _printer.NewLine();
             }
             _printer.Print(_commandDiscovery.AvailableCommands);
-            
+
             while (true)
             {
                 try
@@ -60,10 +60,9 @@ namespace InteractiveConsole
                         continue;
                     }
 
-                    if (!TrySetParameters(commandInstance, parserResult, command, out var errors))
+                    if (!TrySetParameters(commandInstance, parserResult, command, out var error))
                     {
-                        _printer.WriteLine().Error("Failed to set parameters");
-                        errors.ForEach(e => _printer.WriteLine().Error(e));
+                        _printer.WriteLine().Error($"Failed to set parameters: {error}");
                         continue;
                     }
 
@@ -110,7 +109,7 @@ namespace InteractiveConsole
             return false;
         }
 
-        private bool TrySetParameters(BaseCommand commandInstance, ParameterParserResult parserResult, CommandInfo command, out List<string> errors)
+        private bool TrySetParameters(BaseCommand commandInstance, ParameterParserResult parserResult, CommandInfo command, out string error)
         {
             var parameterProcessor = new ParameterProcessor(_inMemoryStorage)
             {
@@ -119,9 +118,9 @@ namespace InteractiveConsole
                 CommandInfo = command
             };
 
-            errors = parameterProcessor.SetParameters();
+            error = parameterProcessor.SetParameters();
 
-            return errors.Count == 0;
+            return String.IsNullOrEmpty(error);
         }
     }
 }

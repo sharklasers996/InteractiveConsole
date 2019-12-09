@@ -23,18 +23,8 @@ namespace InteractiveConsole
             _InMemoryStorage = InMemoryStorage;
         }
 
-        public List<string> SetParameters()
+        public string SetParameters()
         {
-            // Console.WriteLine($"Command: {ParserResult.CommandName}");
-            // if (ParserResult.Parameters != null)
-            // {
-            //     foreach (var param in ParserResult.Parameters)
-            //     {
-            //         Console.WriteLine($"{param.Name}={param.Value}");
-            //     }
-            // }
-            var errors = new List<string>();
-
             var commandType = CommandInstance.GetType();
             foreach (var option in CommandInfo.Options.OrderBy(x => x.Required))
             {
@@ -43,8 +33,7 @@ namespace InteractiveConsole
                 {
                     if (option.Required)
                     {
-                        errors.Add($"Option '{option.Name}' is required");
-                        return errors;
+                        return $"Option '{option.Name}' is required";
                     }
 
                     continue;
@@ -56,39 +45,39 @@ namespace InteractiveConsole
                 {
                     if (parameter.IndexFrom != null)
                     {
-                        var inMemoryVarSetErrors = SetInMemoryVariableIndexValue(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom, parameter.IndexTo);
-                        if (inMemoryVarSetErrors.Any())
+                        var error = SetInMemoryVariableIndexValue(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom, parameter.IndexTo);
+                        if (!String.IsNullOrEmpty(error))
                         {
-                            return inMemoryVarSetErrors;
+                            return error;
                         }
                     }
                     else
                     {
-                        var inMemoryVarSetErrors = SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
-                        if (inMemoryVarSetErrors.Any())
+                        var error = SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
+                        if (!String.IsNullOrEmpty(error))
                         {
-                            return inMemoryVarSetErrors;
+                            return error;
                         }
                     }
                 }
                 else
                 {
-                    var paramSetErrors = SetParameterValue(instanceProperty, parameter);
-                    if (paramSetErrors.Any())
+                    var error = SetParameterValue(instanceProperty, parameter);
+                    if (!String.IsNullOrEmpty(error))
                     {
-                        return paramSetErrors;
+                        return error;
                     }
                 }
             }
 
-            return errors;
+            return string.Empty;
         }
 
-        private List<string> SetInMemoryVariableIndexValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int indexFrom, int? indexTo)
+        private string SetInMemoryVariableIndexValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int indexFrom, int? indexTo)
         {
             if (!inMemoryVariable.IsList)
             {
-                return new List<string> { "Index can only be used on list" };
+                return "Index can only be used on list";
             }
 
             var listType = inMemoryVariable.Value.GetType();
@@ -102,13 +91,13 @@ namespace InteractiveConsole
 
             if (indexFrom > listLength)
             {
-                return new List<string> { "Index is out of bounds" };
+                return "Index is out of bounds";
             }
 
             if (indexTo != null
                 && indexTo >= listLength)
             {
-                return new List<string> { "Index is out of bounds" };
+                return "Index is out of bounds";
             }
 
             var addedValues = new List<object>();
@@ -139,7 +128,7 @@ namespace InteractiveConsole
                         if (instanceProperty.PropertyType.GetListItemType() != typeof(object)
                             && instanceProperty.PropertyType.GetListItemType() != listItemValueType)
                         {
-                            return new List<string> { "Parameter type does not match" };
+                            return "Parameter type does not match";
                         }
                         else
                         {
@@ -151,7 +140,7 @@ namespace InteractiveConsole
                         if (instanceProperty.PropertyType != typeof(object)
                             && instanceProperty.PropertyType != listItemValueType)
                         {
-                            return new List<string> { "Parameter type does not match" };
+                            return "Parameter type does not match";
                         }
                         else
                         {
@@ -190,13 +179,11 @@ namespace InteractiveConsole
                 instanceProperty.SetValue(CommandInstance, instancedList);
             }
 
-            return new List<string>();
+            return string.Empty;
         }
 
-        private List<string> SetInMemoryVariableValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable)
+        private string SetInMemoryVariableValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable)
         {
-            var errors = new List<string>();
-
             if (instanceProperty.PropertyType.IsNumericType()
                 && inMemoryVariable.IsNumber)
             {
@@ -211,7 +198,7 @@ namespace InteractiveConsole
                 if (instanceProperty.PropertyType != typeof(object)
                     && instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
                 {
-                    errors.Add("Parameter type does not match");
+                    return "Parameter type does not match";
                 }
                 else
                 {
@@ -219,12 +206,11 @@ namespace InteractiveConsole
                 }
             }
 
-            return errors;
+            return string.Empty;
         }
 
-        private List<string> SetParameterValue(PropertyInfo instanceProperty, Parameter parameter)
+        private string SetParameterValue(PropertyInfo instanceProperty, Parameter parameter)
         {
-            var errors = new List<string>();
             object parameterValue = parameter.Value;
 
             if (instanceProperty.PropertyType.IsNumericType()
@@ -243,14 +229,14 @@ namespace InteractiveConsole
 
             if (instanceProperty.PropertyType != parameterValue.GetType())
             {
-                errors.Add("Parameter type does not match");
+                return "Parameter type does not match";
             }
             else
             {
                 instanceProperty.SetValue(CommandInstance, parameterValue);
             }
 
-            return errors;
+            return string.Empty;
         }
     }
 }
