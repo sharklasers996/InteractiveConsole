@@ -55,7 +55,6 @@ namespace InteractiveConsole.Tests
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
                 IsCustomObject = true,
-                ObjectName = "TestObject",
                 Value = inMemoryVariable
             });
 
@@ -76,7 +75,6 @@ namespace InteractiveConsole.Tests
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
                 IsCustomObject = true,
-                ObjectName = "TestObject",
                 Value = inMemoryVariable
             });
 
@@ -97,7 +95,6 @@ namespace InteractiveConsole.Tests
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
                 IsCustomObject = true,
-                ObjectName = "TestObject",
                 Value = inMemoryVariable,
                 IsList = true
             });
@@ -126,7 +123,6 @@ namespace InteractiveConsole.Tests
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
                 IsCustomObject = true,
-                ObjectName = "TestObject",
                 Value = inMemoryVariable,
                 IsList = true
             });
@@ -144,16 +140,15 @@ namespace InteractiveConsole.Tests
         }
 
         [Fact]
-        public void SetParameters_should_return_error_when_index_is_out_of_bounds()
+        public void SetParameters_should_return_error_when_indexFrom_is_out_of_bounds()
         {
             // arrange
             var propertyName = "ObjectProp";
             var inMemoryVariable = CreateListOfTestObjects(1);
-            
+
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
                 IsCustomObject = true,
-                ObjectName = "TestObject",
                 Value = inMemoryVariable,
                 IsList = true
             });
@@ -169,6 +164,138 @@ namespace InteractiveConsole.Tests
 
             // assert
             error.Should().Be("Index is out of bounds");
+        }
+
+        [Fact]
+        public void SetParameters_should_return_error_when_indexTo_is_without_indexFrom()
+        {
+            // arrange
+            var propertyName = "ObjectProp";
+            var inMemoryVariable = CreateListOfTestObjects(1);
+
+            _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
+            {
+                IsCustomObject = true,
+                Value = inMemoryVariable,
+                IsList = true
+            });
+
+            var processor = CreateParameterProcessor(new Parameter
+            {
+                Name = propertyName,
+                Value = string.Empty,
+                IndexTo = 5,
+            });
+            // act 
+            var error = processor.SetParameters();
+
+            // assert
+            error.Should().Be("Starting index is required");
+        }
+
+        [Fact]
+        public void SetParameters_should_return_error_when_object_list_type_does_not_match()
+        {
+            // arrange
+            var propertyName = "ObjectsProp";
+            var inMemoryVariable = new List<string> { "test1", "test2" };
+
+            _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
+            {
+                IsCustomObject = true,
+                Value = inMemoryVariable,
+                IsList = true
+            });
+
+            var processor = CreateParameterProcessor(new Parameter
+            {
+                Name = propertyName,
+                Value = string.Empty
+            });
+            // act 
+            var error = processor.SetParameters();
+
+            // assert
+            error.Should().Be("Parameter type does not match");
+        }
+
+        [Fact]
+        public void SetParameters_should_return_error_when_object_type_does_not_match()
+        {
+            // arrange
+            var propertyName = "ObjectProp";
+            var inMemoryVariable = "test_string_value";
+
+            _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
+            {
+                IsCustomObject = true,
+                Value = inMemoryVariable
+            });
+
+            var processor = CreateParameterProcessor(new Parameter
+            {
+                Name = propertyName,
+                Value = string.Empty
+            });
+            // act 
+            var error = processor.SetParameters();
+
+            // assert
+            error.Should().Be("Parameter type does not match");
+        }
+
+        [Fact]
+        public void SetParameters_should_set_inMemoryStorageVariable_property_as_inMemoryStorageVariable_object()
+        {
+            // arrange
+            var propertyName = "InMemoryStorageVariableProp";
+            var inMemoryVariable = new InMemoryStorageVariable
+            {
+                ObjectName = "testObj"
+            };
+
+            _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(inMemoryVariable);
+
+            // act
+            var command = CreateCommandAndSetParameters(new Parameter
+            {
+                Name = propertyName,
+                Value = string.Empty
+            });
+
+            // assert
+            command.InMemoryStorageVariableProp.Should().BeEquivalentTo(inMemoryVariable);
+        }
+
+        [Fact]
+        public void SetParameters_should_set_inMemoryStorageVariable_property_with_index()
+        {
+            // arrange
+            var propertyName = "InMemoryStorageVariableProp";
+            var inMemoryVariable = new List<InMemoryStorageVariable>{
+                new InMemoryStorageVariable
+                {
+                    ObjectName = "testObj"
+                }
+            };
+
+            _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
+            {
+                IsCustomObject = true,
+                Value = inMemoryVariable,
+                IsList = true
+            });
+
+            // act
+            var command = CreateCommandAndSetParameters(new Parameter
+            {
+                Name = propertyName,
+                Value = string.Empty,
+                IndexFrom = 0
+            });
+
+            // assert
+            command.InMemoryStorageVariableProp.Should().BeEquivalentTo(inMemoryVariable.First());
         }
 
         private TestCommand CreateCommandAndSetParameters(string propertyName, object propertyValue)
@@ -262,6 +389,7 @@ namespace InteractiveConsole.Tests
         public int IntProp { get; set; }
         public TestObject ObjectProp { get; set; }
         public List<TestObject> ObjectsProp { get; set; }
+        public InMemoryStorageVariable InMemoryStorageVariableProp { get; set; }
 
         public override object Execute()
         {

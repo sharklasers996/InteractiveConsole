@@ -43,6 +43,12 @@ namespace InteractiveConsole
                 var inMemoryVariable = _InMemoryStorage.TryGetVariable(parameter.Value);
                 if (inMemoryVariable != null)
                 {
+                    if (parameter.IndexFrom == null
+                        && parameter.IndexTo != null)
+                    {
+                        return "Starting index is required";
+                    }
+
                     if (parameter.IndexFrom != null)
                     {
                         var error = SetInMemoryVariableIndexValue(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom, parameter.IndexTo);
