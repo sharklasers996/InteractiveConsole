@@ -12,8 +12,11 @@ namespace InteractiveConsole
     {
         public List<CommandInfo> AvailableCommands { get; private set; }
 
-        public CommandDiscovery()
+        private readonly ITypeProvider _typeProvider;
+
+        public CommandDiscovery(ITypeProvider typeProvider)
         {
+            _typeProvider = typeProvider;
             AvailableCommands = new List<CommandInfo>();
 
             var commands = GetCommands();
@@ -28,8 +31,7 @@ namespace InteractiveConsole
 
         private IEnumerable<CommandInfo> GetCommands()
         {
-            var types = Assembly.GetEntryAssembly().GetTypes().ToList();
-            types.AddRange(Assembly.GetCallingAssembly().GetTypes());
+            var types = _typeProvider.GetTypes();
 
             foreach (var type in types)
             {
@@ -63,42 +65,14 @@ namespace InteractiveConsole
                             optionSelections.Add(e.ToString());
                         }
                     }
+                    
                     var optionInfo = new CommandOptionInfo
                     {
                         Name = property.Name,
                         Required = property.GetCustomAttribute(typeof(RequiredAttribute)) != null,
                         AvailableValues = optionSelections,
-                        IsList = propertyType.IsList(),
-                        IsNumber = propertyType.IsNumericType(),
-                        IsString = propertyType.IsString(),
-                        IsEnum = propertyType.IsEnum
+                        TypeInfo = propertyType.ToTypeInfo()
                     };
-
-                    if (optionInfo.IsList)
-                    {
-                        var listItemType = propertyType.GetListItemType();
-                        optionInfo.IsListItemNumber = listItemType.IsNumericType();
-                        optionInfo.IsListItemString = listItemType.IsString();
-                        optionInfo.IsListItemEnum = listItemType.IsEnum;
-
-                        if (!optionInfo.IsListItemNumber
-                            && !optionInfo.IsListItemString
-                            && !optionInfo.IsListItemEnum)
-                        {
-                            optionInfo.IsListItemCustomObject = true;
-                            optionInfo.ListItemObjectName = listItemType.Name;
-                        }
-                    }
-
-                    if (!optionInfo.IsList
-                        && !optionInfo.IsNumber
-                        && !optionInfo.IsString
-                        && !optionInfo.IsEnum)
-                    {
-                        optionInfo.IsCustomObject = true;
-                        optionInfo.ObjectName = propertyType.Name;
-                    }
-
 
                     yield return optionInfo;
                 }

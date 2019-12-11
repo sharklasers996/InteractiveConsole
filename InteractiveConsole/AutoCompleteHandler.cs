@@ -11,12 +11,11 @@ namespace InteractiveConsole
     {
         private const char Space = ' ';
 
-        private readonly List<CommandInfo> _availableCommands;
+        private readonly ICommandDiscovery _commandDiscovery;
 
-        public AutoCompleteHandler()
+        public AutoCompleteHandler(ICommandDiscovery commandDiscovery)
         {
-            var discovery = new CommandDiscovery();
-            _availableCommands = discovery.AvailableCommands;
+            _commandDiscovery = commandDiscovery;
         }
 
         public string Complete(string input, bool next)
@@ -32,7 +31,7 @@ namespace InteractiveConsole
 
         private string CompleteCommand(string input, bool next)
         {
-            var command = _availableCommands.FirstOrDefault(x => x.NameWithoutSuffix.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
+            var command = _commandDiscovery.AvailableCommands.FirstOrDefault(x => x.NameWithoutSuffix.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
             if (command == null)
             {
                 return input;
@@ -41,8 +40,8 @@ namespace InteractiveConsole
             if (command.NameWithoutSuffix.Equals(input))
             {
                 command = next == true
-                    ? _availableCommands.CycleNext(command)
-                    : _availableCommands.CyclePrevious(command);
+                    ? _commandDiscovery.AvailableCommands.CycleNext(command)
+                    : _commandDiscovery.AvailableCommands.CyclePrevious(command);
             }
 
             return command.NameWithoutSuffix;
@@ -184,7 +183,7 @@ namespace InteractiveConsole
             }
 
             var command = input.Substring(0, input.IndexOf(Space));
-            return _availableCommands.FirstOrDefault(x => x.NameWithoutSuffix == command);
+            return _commandDiscovery.AvailableCommands.FirstOrDefault(x => x.NameWithoutSuffix == command);
         }
 
         private string ToKeyValueString(string key, string value)
