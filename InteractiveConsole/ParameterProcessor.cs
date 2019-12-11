@@ -81,7 +81,7 @@ namespace InteractiveConsole
 
         private string SetInMemoryVariableIndexValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int indexFrom, int? indexTo)
         {
-            if (!inMemoryVariable.IsList)
+            if (!inMemoryVariable.TypeInfo.IsList)
             {
                 return "Index can only be used on list";
             }
@@ -118,8 +118,8 @@ namespace InteractiveConsole
                 var listItemValueType = listItemValue.GetType();
 
                 object value;
-                if (instanceProperty.PropertyType.GetListItemType().IsNumericType()
-                    && listItemValueType.IsNumericType())
+                if (instanceProperty.PropertyType.GetListItemType().IsNumber()
+                    && listItemValueType.IsNumber())
                 {
                     value = int.Parse(listItemValue.ToString());
                 }
@@ -190,8 +190,8 @@ namespace InteractiveConsole
 
         private string SetInMemoryVariableValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable)
         {
-            if (instanceProperty.PropertyType.IsNumericType()
-                && inMemoryVariable.IsNumber)
+            if (instanceProperty.PropertyType.IsNumber()
+                && inMemoryVariable.TypeInfo.IsNumber)
             {
                 instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value.ToString());
             }
@@ -219,7 +219,7 @@ namespace InteractiveConsole
         {
             object parameterValue = parameter.Value;
 
-            if (instanceProperty.PropertyType.IsNumericType()
+            if (instanceProperty.PropertyType.IsNumber()
                 && int.TryParse(parameter.Value, out var numberParameter))
             {
                 parameterValue = numberParameter;

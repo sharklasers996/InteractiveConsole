@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Collections;
 using InteractiveConsole.Extensions;
 
 namespace InteractiveConsole.Storage
@@ -16,45 +15,9 @@ namespace InteractiveConsole.Storage
             {
                 Id = Variables.Any() ? Variables.Max(x => x.Id) + 1 : 1,
                 Value = value,
-                ProducedByCommand = parserResult.CommandName
+                ProducedByCommand = parserResult.CommandName,
+                TypeInfo = value.ToTypeInfo()
             };
-
-            var valueType = value.GetType();
-            if (valueType.IsList())
-            {
-                variable.IsList = true;
-                variable.Length = (value as IList).Count;
-
-                var listItemType = valueType.GetListItemType();
-
-                variable.IsListItemNumber = listItemType.IsNumericType();
-                variable.IsListItemString = listItemType.IsString();
-
-                if (!variable.IsListItemNumber
-                    && !variable.IsListItemString)
-                {
-                    variable.IsListItemCustomObject = true;
-                    variable.ListItemObjectName = listItemType.Name;
-                }
-            }
-
-            if (valueType.IsNumericType())
-            {
-                variable.IsNumber = true;
-            }
-
-            if (valueType.IsString())
-            {
-                variable.IsString = true;
-            }
-
-            if (!variable.IsList
-                && !variable.IsNumber
-                && !variable.IsString)
-            {
-                variable.IsCustomObject = true;
-                variable.ObjectName = valueType.Name;
-            }
 
             Variables.Add(variable);
         }

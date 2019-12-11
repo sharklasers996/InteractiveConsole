@@ -16,7 +16,9 @@ namespace InteractiveConsole
         {
             _unityContainer.RegisterSingleton<IInMemoryStorage, InMemoryStorage>();
             _unityContainer.RegisterType<ICommandDiscovery, CommandDiscovery>();
-            _unityContainer.RegisterType<IInputHandler, InputHandler>(new InjectionConstructor(new AutoCompleteHandler(), _theme));
+            _unityContainer.RegisterType<ITypeProvider, TypeProvider>();
+            _unityContainer.RegisterType<IAutoCompleteHandler, AutoCompleteHandler>();
+            _unityContainer.RegisterType<IInputHandler, InputHandler>(new InjectionConstructor(_unityContainer.Resolve<IAutoCompleteHandler>(), _theme));
             _unityContainer.RegisterType<IPrinter, Printer>(new InjectionConstructor(_theme));
         }
 

@@ -54,7 +54,11 @@ namespace InteractiveConsole.Tests
             var inMemoryVariable = CreateTestObject(15, "prop_value");
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsCustomObject = true,
+                    ObjectName = "TestObject"
+                },
                 Value = inMemoryVariable
             });
 
@@ -74,7 +78,12 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsList = true,
+                    IsListItemCustomObject = true,
+                    ListItemObjectName = "TestObject"
+                },
                 Value = inMemoryVariable
             });
 
@@ -94,9 +103,12 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsList = true,
+                    IsListItemCustomObject = true
+                },
                 Value = inMemoryVariable,
-                IsList = true
             });
 
             // act 
@@ -122,9 +134,12 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsListItemCustomObject = true,
+                    IsList = true
+                },
                 Value = inMemoryVariable,
-                IsList = true
             });
 
             // act 
@@ -148,9 +163,12 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsListItemCustomObject = true,
+                    IsList = true
+                },
                 Value = inMemoryVariable,
-                IsList = true
             });
 
             var processor = CreateParameterProcessor(new Parameter
@@ -175,9 +193,12 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsListItemCustomObject = true,
+                    IsList = true
+                },
                 Value = inMemoryVariable,
-                IsList = true
             });
 
             var processor = CreateParameterProcessor(new Parameter
@@ -202,9 +223,12 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsListItemCustomObject = true,
+                    IsList = true
+                },
                 Value = inMemoryVariable,
-                IsList = true
             });
 
             var processor = CreateParameterProcessor(new Parameter
@@ -228,7 +252,10 @@ namespace InteractiveConsole.Tests
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsCustomObject = true
+                },
                 Value = inMemoryVariable
             });
 
@@ -251,7 +278,10 @@ namespace InteractiveConsole.Tests
             var propertyName = "InMemoryStorageVariableProp";
             var inMemoryVariable = new InMemoryStorageVariable
             {
-                ObjectName = "testObj"
+                TypeInfo = new TypeInfo
+                {
+                    ObjectName = "testObj"
+                }
             };
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(inMemoryVariable);
@@ -275,15 +305,21 @@ namespace InteractiveConsole.Tests
             var inMemoryVariable = new List<InMemoryStorageVariable>{
                 new InMemoryStorageVariable
                 {
-                    ObjectName = "testObj"
+                    TypeInfo = new TypeInfo
+                    {
+                        ObjectName = "testObj"
+                    }
                 }
             };
 
             _inMemoryStorage.TryGetVariable(Arg.Any<string>()).Returns(new InMemoryStorageVariable
             {
-                IsCustomObject = true,
+                TypeInfo = new TypeInfo
+                {
+                    IsList = true,
+                    IsListItemCustomObject = true
+                },
                 Value = inMemoryVariable,
-                IsList = true
             });
 
             // act
