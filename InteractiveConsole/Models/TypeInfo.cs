@@ -1,7 +1,10 @@
+using System;
+
 namespace InteractiveConsole.Models
 {
-    public class TypeInfo
+    public class TypeInfo : IEquatable<TypeInfo>
     {
+        public Type Type { get; set; }
         public bool IsNumber { get; set; }
         public bool IsString { get; set; }
         public bool IsEnum { get; set; }
@@ -14,5 +17,30 @@ namespace InteractiveConsole.Models
         public bool IsListItemString { get; set; }
         public bool IsListItemCustomObject { get; set; }
         public string ListItemObjectName { get; set; }
+
+        public bool Equals(TypeInfo other)
+        {
+            if ((other.IsNumber && !IsNumber)
+                || (other.IsString && !IsString)
+                || (other.IsEnum && !IsEnum)
+                || (other.IsBool && !IsBool)
+                || (other.IsCustomObject && !IsCustomObject)
+                || (other.IsList && !IsList))
+            {
+                return false;
+            }
+
+            if (other.IsList)
+            {
+                if ((other.IsListItemNumber && !IsListItemNumber)
+                    || (other.IsListItemString && !IsListItemString)
+                    || (other.IsListItemCustomObject && !IsListItemCustomObject))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

@@ -14,7 +14,8 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedTypeInfo = new TypeInfo
             {
-                IsString = true
+                IsString = true,
+                Type = typeof(string)
             };
 
             // act
@@ -30,7 +31,8 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedTypeInfo = new TypeInfo
             {
-                IsNumber = true
+                IsNumber = true,
+                Type = typeof(int)
             };
 
             // act
@@ -46,7 +48,8 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedTypeInfo = new TypeInfo
             {
-                IsEnum = true
+                IsEnum = true,
+                Type = typeof(TestEnum)
             };
 
             // act
@@ -63,7 +66,8 @@ namespace InteractiveConsole.Tests
             var expectedTypeInfo = new TypeInfo
             {
                 IsCustomObject = true,
-                ObjectName = "Object"
+                ObjectName = "Object",
+                Type = typeof(object)
             };
 
             // act
@@ -80,7 +84,8 @@ namespace InteractiveConsole.Tests
             var expectedTypeInfo = new TypeInfo
             {
                 IsList = true,
-                IsListItemString = true
+                IsListItemString = true,
+                Type = typeof(List<string>)
             };
 
             // act
@@ -97,7 +102,8 @@ namespace InteractiveConsole.Tests
             var expectedTypeInfo = new TypeInfo
             {
                 IsList = true,
-                IsListItemNumber = true
+                IsListItemNumber = true,
+                Type = typeof(List<int>)
             };
 
             // act
@@ -115,7 +121,8 @@ namespace InteractiveConsole.Tests
             {
                 IsList = true,
                 IsListItemCustomObject = true,
-                ListItemObjectName = "Object"
+                ListItemObjectName = "Object",
+                Type = typeof(List<object>)
             };
 
             // act
@@ -131,7 +138,8 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedTypeInfo = new TypeInfo
             {
-                IsBool = true
+                IsBool = true,
+                Type = typeof(bool)
             };
 
             // act

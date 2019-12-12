@@ -58,6 +58,7 @@ namespace InteractiveConsole.Extensions
         {
             var typeInfo = new TypeInfo
             {
+                Type = type,
                 IsEnum = type.IsEnum,
                 IsList = type.IsList(),
                 IsString = type.IsString(),

@@ -2,6 +2,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using InteractiveConsole.Attributes;
+using InteractiveConsole.Extensions;
 using NSubstitute;
 using Xunit;
 using FluentAssertions;
@@ -46,6 +47,7 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.StringProp));
             expectedCommandOptionInfo.TypeInfo.IsString = true;
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(string);
             expectedCommandOptionInfo.Required = true;
 
             // act
@@ -61,6 +63,7 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.IntProp));
             expectedCommandOptionInfo.TypeInfo.IsNumber = true;
+expectedCommandOptionInfo.TypeInfo.Type = typeof(int);
 
             // act
             var commandOptionInfo = GetCommandOptionInfo(nameof(_command.IntProp));
@@ -75,6 +78,7 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.ObjectProp));
             expectedCommandOptionInfo.TypeInfo.IsCustomObject = true;
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(object);
             expectedCommandOptionInfo.TypeInfo.ObjectName = "Object";
 
             // act
@@ -91,6 +95,7 @@ namespace InteractiveConsole.Tests
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.StringListProp));
             expectedCommandOptionInfo.TypeInfo.IsList = true;
             expectedCommandOptionInfo.TypeInfo.IsListItemString = true;
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(List<string>);
 
             // act
             var commandOptionInfo = GetCommandOptionInfo(nameof(_command.StringListProp));
@@ -106,6 +111,7 @@ namespace InteractiveConsole.Tests
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.IntListProp));
             expectedCommandOptionInfo.TypeInfo.IsList = true;
             expectedCommandOptionInfo.TypeInfo.IsListItemNumber = true;
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(List<int>);
 
             // act
             var commandOptionInfo = GetCommandOptionInfo(nameof(_command.IntListProp));
@@ -122,6 +128,7 @@ namespace InteractiveConsole.Tests
             expectedCommandOptionInfo.TypeInfo.IsList = true;
             expectedCommandOptionInfo.TypeInfo.IsListItemCustomObject = true;
             expectedCommandOptionInfo.TypeInfo.ListItemObjectName = "Object";
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(List<object>);
 
             // act
             var commandOptionInfo = GetCommandOptionInfo(nameof(_command.ObjectListProp));
@@ -136,6 +143,7 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.EnumProp));
             expectedCommandOptionInfo.TypeInfo.IsEnum = true;
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(TestEnum);
 
             foreach (var value in Enum.GetValues(typeof(TestEnum)))
             {
@@ -155,6 +163,7 @@ namespace InteractiveConsole.Tests
             // arrange
             var expectedCommandOptionInfo = CreateCommandOptionInfo(nameof(_command.BoolProp));
             expectedCommandOptionInfo.TypeInfo.IsBool = true;
+            expectedCommandOptionInfo.TypeInfo.Type = typeof(bool);
 
             // act
             var commandOptionInfo = GetCommandOptionInfo(nameof(_command.BoolProp));
