@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -24,11 +25,21 @@ namespace InteractiveConsole
                 Parameters = new List<Parameter>()
             };
 
-            var parametersString = input.Substring(firstSpaceIndex);
+            var parametersString = input.Substring(firstSpaceIndex).Trim();
 
-            var parameterMatches = Regex.Matches(parametersString, "\\s(?<parameterName>\\w+)=((?<parameterValue>[A-Za-z0-9~!@#$%&*\\(\\)-\\+\\[\\]\\.]+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")");
+            var parameterMatches = Regex.Matches(parametersString, "\\s?(?<parameterName>\\w+)=((?<parameterValue>[A-Za-z0-9~!@#$'%&*\\(\\)-\\+\\[\\]\\.]+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")");
+            if (!parameterMatches.Any()
+                && !String.IsNullOrEmpty(parametersString.Trim()))
+            {
+                result.Success = false;
+                return result;
+            }
+
+            var matchLength = 0;
             foreach (Match match in parameterMatches)
             {
+                matchLength += match.Length;
+
                 var value = match.Groups["parameterValue"].ToString();
 
                 var param = new Parameter
@@ -52,6 +63,8 @@ namespace InteractiveConsole
 
                 result.Parameters.Add(param);
             }
+
+            result.Success = parametersString.Length == matchLength;
 
             return result;
         }
