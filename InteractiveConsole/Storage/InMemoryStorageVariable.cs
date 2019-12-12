@@ -15,5 +15,45 @@ namespace InteractiveConsole.Storage
         {
             return $"#{Id}";
         }
+
+        public string ToTypeString()
+        {
+            string typeString;
+            if (TypeInfo.IsList)
+            {
+                if (TypeInfo.IsListItemCustomObject)
+                {
+                    typeString = $"list of {Length} {TypeInfo.ListItemObjectName} objects";
+                }
+                else
+                {
+                    typeString = TypeInfo switch
+                    {
+                        var o when o.IsListItemNumber => $"list of {Length} numbers",
+                        var o when o.IsListItemString => $"list of {Length} strings",
+                        _ => $"list of {Length} custom objects"
+                    };
+                }
+            }
+            else
+            {
+                if (TypeInfo.IsCustomObject)
+                {
+                    typeString = $"{TypeInfo.ObjectName} object";
+                }
+                else
+                {
+                    typeString = TypeInfo switch
+                    {
+                        var o when o.IsList => "list",
+                        var o when o.IsNumber => "number",
+                        var o when o.IsString => "string",
+                        _ => "object"
+                    };
+                }
+            }
+
+            return $"{typeString} returned by {ProducedByCommand}";
+        }
     }
 }

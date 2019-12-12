@@ -59,5 +59,46 @@ namespace InteractiveConsole.Models
 
             return true;
         }
+
+        public override string ToString()
+        {
+            string typeString;
+            if (IsList)
+            {
+                if (IsListItemCustomObject)
+                {
+                    typeString = $"list of {ListItemObjectName} objects";
+                }
+                else
+                {
+                    typeString = this switch
+                    {
+                        var o when o.IsListItemNumber => "list of numbers",
+                        var o when o.IsListItemString => "list of strings",
+                        _ => "list of custom objects"
+                    };
+                }
+            }
+            else
+            {
+                if (IsCustomObject)
+                {
+                    typeString = $"{ObjectName} object";
+                }
+                else
+                {
+                    typeString = this switch
+                    {
+                        var o when o.IsEnum => "enum",
+                        var o when o.IsList => "list",
+                        var o when o.IsNumber => "number",
+                        var o when o.IsString => "string",
+                        _ => "object"
+                    };
+                }
+            }
+
+            return typeString;
+        }
     }
 }

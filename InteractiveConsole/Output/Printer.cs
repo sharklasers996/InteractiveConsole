@@ -107,45 +107,8 @@ namespace InteractiveConsole.Output
                 {
                     var requiredString = option.Required ? "required " : string.Empty;
 
-                    var typeString = string.Empty;
-                    if (option.IsList)
-                    {
-                        if (option.IsListItemCustomObject)
-                        {
-                            typeString = $"list of {option.ListItemObjectName} objects";
-                        }
-                        else
-                        {
-                            typeString = option switch
-                            {
-                                var o when o.IsListItemEnum => "list of enums",
-                                var o when o.IsListItemNumber => "list of numbers",
-                                var o when o.IsListItemString => "list of strings",
-                                _ => "list of custom objects"
-                            };
-                        }
-                    }
-                    else
-                    {
-                        if (option.IsCustomObject)
-                        {
-                            typeString = $"{option.ObjectName} object";
-                        }
-                        else
-                        {
-                            typeString = option switch
-                            {
-                                var o when o.IsEnum => "enum",
-                                var o when o.IsList => "list",
-                                var o when o.IsNumber => "number",
-                                var o when o.IsString => "string",
-                                _ => "object"
-                            };
-                        }
-                    }
-
                     optionsString += option.Name.Pastel(_theme.Highlight);
-                    optionsString += $" ({requiredString}{typeString}) ".Pastel(_theme.InfoSecondary);
+                    optionsString += $" ({requiredString}{option.TypeInfo.ToString()}) ".Pastel(_theme.InfoSecondary);
                 }
 
                 Console.Write(optionsString.Trim(new[] { ' ', ',' }));
@@ -190,7 +153,7 @@ namespace InteractiveConsole.Output
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             Console.Write(new string(' ', actionsTextLength));
             Console.SetCursorPosition(0, Console.CursorTop - 1);
-            
+
             return keyInfo.KeyChar.ToString();
         }
     }

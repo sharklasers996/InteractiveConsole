@@ -1,5 +1,4 @@
 using System.Linq;
-using System;
 using InteractiveConsole.Attributes;
 using InteractiveConsole.Storage;
 
@@ -28,42 +27,7 @@ namespace InteractiveConsole.Commands
             foreach (var variable in _inMemoryStorage.Variables)
             {
                 Printer.Write().Info($"{variable.Id}: ");
-                var typeString = string.Empty;
-                if (variable.IsList)
-                {
-                    if (variable.IsListItemCustomObject)
-                    {
-                        typeString = $"list of {variable.Length} {variable.ListItemObjectName} objects";
-                    }
-                    else
-                    {
-                        typeString = variable switch
-                        {
-                            var o when o.IsListItemNumber => $"list of {variable.Length} numbers",
-                            var o when o.IsListItemString => $"list of {variable.Length} strings",
-                            _ => $"list of {variable.Length} custom objects"
-                        };
-                    }
-                }
-                else
-                {
-                    if (variable.IsCustomObject)
-                    {
-                        typeString = $"{variable.ObjectName} object";
-                    }
-                    else
-                    {
-                        typeString = variable switch
-                        {
-                            var o when o.IsList => "list",
-                            var o when o.IsNumber => "number",
-                            var o when o.IsString => "string",
-                            _ => "object"
-                        };
-                    }
-                }
-
-                Printer.WriteLine().Info2($"{typeString} returned by {variable.ProducedByCommand}");
+                Printer.WriteLine().Info2(variable.ToTypeString());
             }
 
             Printer.WriteLine().Info(new string('-', 50));
