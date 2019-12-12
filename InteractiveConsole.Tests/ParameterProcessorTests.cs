@@ -33,6 +33,34 @@ namespace InteractiveConsole.Tests
         }
 
         [Fact]
+        public void SetParameters_should_set_enum()
+        {
+            // arrange
+            var propertyName = "EnumProp";
+            var propertyValue = "1";
+
+            // act
+            var command = CreateCommandAndSetParameters(propertyName, propertyValue);
+
+            // assert
+            command.EnumProp.Should().Be(TestEnum.Value1);
+        }
+
+        [Fact]
+        public void SetParameters_should_set_bool()
+        {
+            // arrange
+            var propertyName = "BoolProp";
+            var propertyValue = true;
+
+            // act
+            var command = CreateCommandAndSetParameters(propertyName, propertyValue.ToString());
+
+            // assert
+            command.BoolProp.Should().Be(propertyValue);
+        }
+
+        [Fact]
         public void SetParameters_should_set_int()
         {
             // arrange
@@ -106,7 +134,8 @@ namespace InteractiveConsole.Tests
                 TypeInfo = new TypeInfo
                 {
                     IsList = true,
-                    IsListItemCustomObject = true
+                    IsListItemCustomObject = true,
+                    Type = typeof(List<TestObject>)
                 },
                 Value = inMemoryVariable,
             });
@@ -116,12 +145,12 @@ namespace InteractiveConsole.Tests
             {
                 Name = propertyName,
                 Value = string.Empty,
-                IndexFrom = 5,
-                IndexTo = 9
+                IndexFrom = 3,
+                IndexTo = 6
             });
 
             // assert
-            var expectedVariable = inMemoryVariable.Skip(5).ToList();
+            var expectedVariable = inMemoryVariable.Skip(3).Take(3).ToList();
             command.ObjectsProp.Should().BeEquivalentTo(expectedVariable);
         }
 
@@ -137,7 +166,8 @@ namespace InteractiveConsole.Tests
                 TypeInfo = new TypeInfo
                 {
                     IsListItemCustomObject = true,
-                    IsList = true
+                    IsList = true,
+                    Type = typeof(List<TestObject>)
                 },
                 Value = inMemoryVariable,
             });
@@ -166,7 +196,8 @@ namespace InteractiveConsole.Tests
                 TypeInfo = new TypeInfo
                 {
                     IsListItemCustomObject = true,
-                    IsList = true
+                    IsList = true,
+                    Type = typeof(List<TestObject>)
                 },
                 Value = inMemoryVariable,
             });
@@ -225,7 +256,7 @@ namespace InteractiveConsole.Tests
             {
                 TypeInfo = new TypeInfo
                 {
-                    IsListItemCustomObject = true,
+                    IsListItemString = true,
                     IsList = true
                 },
                 Value = inMemoryVariable,
@@ -254,7 +285,7 @@ namespace InteractiveConsole.Tests
             {
                 TypeInfo = new TypeInfo
                 {
-                    IsCustomObject = true
+                    IsString = true
                 },
                 Value = inMemoryVariable
             });
@@ -272,6 +303,26 @@ namespace InteractiveConsole.Tests
         }
 
         [Fact]
+        public void SetParameters_should_return_error_when_primitive_type_does_not_match()
+        {
+            // arrange
+            var propertyName = "IntProp";
+            var propertyValue = "not_int";
+
+            // act
+            var processor = CreateParameterProcessor(new Parameter
+            {
+                Name = propertyName,
+                Value = propertyValue
+            });
+            // act 
+            var error = processor.SetParameters();
+
+            // assert
+            error.Should().Be("Parameter type does not match");
+        }
+
+        [Fact]
         public void SetParameters_should_set_inMemoryStorageVariable_property_as_inMemoryStorageVariable_object()
         {
             // arrange
@@ -280,7 +331,8 @@ namespace InteractiveConsole.Tests
             {
                 TypeInfo = new TypeInfo
                 {
-                    ObjectName = "testObj"
+                    ObjectName = "testObj",
+                    Type = typeof(object)
                 }
             };
 
@@ -307,7 +359,8 @@ namespace InteractiveConsole.Tests
                 {
                     TypeInfo = new TypeInfo
                     {
-                        ObjectName = "testObj"
+                        ObjectName = "testObj",
+                        Type = typeof(InMemoryStorageVariable)
                     }
                 }
             };
@@ -317,7 +370,8 @@ namespace InteractiveConsole.Tests
                 TypeInfo = new TypeInfo
                 {
                     IsList = true,
-                    IsListItemCustomObject = true
+                    IsListItemCustomObject = true,
+                    Type = typeof(List<InMemoryStorageVariable>)
                 },
                 Value = inMemoryVariable,
             });
@@ -422,6 +476,8 @@ namespace InteractiveConsole.Tests
     class TestCommand : BaseCommand
     {
         public string StringProp { get; set; }
+        public TestEnum EnumProp { get; set; }
+        public bool BoolProp { get; set; }
         public int IntProp { get; set; }
         public TestObject ObjectProp { get; set; }
         public List<TestObject> ObjectsProp { get; set; }
@@ -437,5 +493,11 @@ namespace InteractiveConsole.Tests
     {
         public int Property1 { get; set; }
         public string Property2 { get; set; }
+    }
+
+    enum TestEnum
+    {
+        Value1 = 1,
+        Value2 = 2
     }
 }

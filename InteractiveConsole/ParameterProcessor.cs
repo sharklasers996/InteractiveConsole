@@ -9,9 +9,11 @@ using System.Collections;
 
 namespace InteractiveConsole
 {
-    // TODO: clean up
     public class ParameterProcessor
     {
+        private const string TypeDoesNotMatchErrorMessage = "Parameter type does not match";
+        private const string IndexOutOfBoundsErrorMessage = "Index is out of bounds";
+
         public BaseCommand CommandInstance { get; set; }
         public ParameterParserResult ParserResult { get; set; }
         public CommandInfo CommandInfo { get; set; }
@@ -28,15 +30,12 @@ namespace InteractiveConsole
             var commandType = CommandInstance.GetType();
             foreach (var option in CommandInfo.Options.OrderBy(x => x.Required))
             {
+                var error = string.Empty;
                 var parameter = ParserResult.Parameters?.FirstOrDefault(x => x.Name == option.Name);
-                if (parameter == null)
+                if (parameter == null
+                    && option.Required)
                 {
-                    if (option.Required)
-                    {
-                        return $"Option '{option.Name}' is required";
-                    }
-
-                    continue;
+                    return $"Option '{option.Name}' is required";
                 }
 
                 var instanceProperty = commandType.GetProperty(parameter.Name);
@@ -49,64 +48,101 @@ namespace InteractiveConsole
                         return "Starting index is required";
                     }
 
-                    if (parameter.IndexFrom != null)
+                    if (parameter.IndexFrom != null
+                        && parameter.IndexTo == null)
                     {
-                        var error = SetInMemoryVariableIndexValue(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom, parameter.IndexTo);
-                        if (!String.IsNullOrEmpty(error))
-                        {
-                            return error;
-                        }
+                        error = SetInMemoryVariableValueAtIndex(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom);
+                    }
+                    else if (parameter.IndexFrom != null
+                        && parameter.IndexTo != null)
+                    {
+                        error = SetInMemoryVariableValueInRange(instanceProperty, inMemoryVariable, (int)parameter.IndexFrom, (int)parameter.IndexTo);
                     }
                     else
                     {
-                        var error = SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
-                        if (!String.IsNullOrEmpty(error))
-                        {
-                            return error;
-                        }
+                        error = SetInMemoryVariableValue(instanceProperty, inMemoryVariable);
                     }
                 }
                 else
                 {
-                    var error = SetParameterValue(instanceProperty, parameter);
-                    if (!String.IsNullOrEmpty(error))
-                    {
-                        return error;
-                    }
+                    error = SetParameterValue(instanceProperty, parameter);
+                }
+
+                if (!String.IsNullOrEmpty(error))
+                {
+                    return error;
                 }
             }
 
             return string.Empty;
         }
 
-        private string SetInMemoryVariableIndexValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int indexFrom, int? indexTo)
+        private string SetInMemoryVariableValueAtIndex(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int index)
         {
-            if (!inMemoryVariable.TypeInfo.IsList)
+            if (index < 0)
             {
-                return "Index can only be used on list";
+                return IndexOutOfBoundsErrorMessage;
             }
 
-            var listType = inMemoryVariable.Value.GetType();
-            var listItemType = listType.GetListItemType();
+            int listLength = (int)inMemoryVariable.TypeInfo.Type.GetProperty("Count").GetValue(inMemoryVariable.Value, null);
+            if (index >= listLength)
+            {
+                return IndexOutOfBoundsErrorMessage;
+            }
+
+            var propertyTypeInfo = instanceProperty.PropertyType.ToTypeInfo();
+
+            if (propertyTypeInfo.IsList
+                && propertyTypeInfo.Equals(inMemoryVariable.TypeInfo))
+            {
+                return TypeDoesNotMatchErrorMessage;
+            }
+
+            if (!propertyTypeInfo.EqualsListType(inMemoryVariable.TypeInfo))
+            {
+                return TypeDoesNotMatchErrorMessage;
+            }
+
+            var inMemoryVariableItemAtIndex = inMemoryVariable.TypeInfo.Type.GetProperty("Item").GetValue(inMemoryVariable.Value, new object[] { index });
+
+            if (!propertyTypeInfo.IsList)
+            {
+                instanceProperty.SetValue(CommandInstance, inMemoryVariableItemAtIndex);
+            }
+            else
+            {
+                var instancedList = (IList)typeof(List<>)
+                    .MakeGenericType(inMemoryVariable.TypeInfo.Type.GetListItemType())
+                    .GetConstructor(Type.EmptyTypes)
+                    .Invoke(null);
+
+                instancedList.Add(inMemoryVariableItemAtIndex);
+                instanceProperty.SetValue(CommandInstance, instancedList);
+            }
+
+            return string.Empty;
+        }
+
+        private string SetInMemoryVariableValueInRange(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable, int indexFrom, int indexTo)
+        {
+            var propertyTypeInfo = instanceProperty.PropertyType.ToTypeInfo();
+            if (!propertyTypeInfo.Equals(inMemoryVariable.TypeInfo))
+            {
+                return TypeDoesNotMatchErrorMessage;
+            }
+            int listLength = (int)inMemoryVariable.TypeInfo.Type.GetProperty("Count").GetValue(inMemoryVariable.Value, null);
+            if (indexFrom < 0
+                || indexFrom > listLength
+                || indexTo >= listLength)
+            {
+                return IndexOutOfBoundsErrorMessage;
+            }
+
             var instancedList = (IList)typeof(List<>)
-                .MakeGenericType(listItemType)
-                .GetConstructor(System.Type.EmptyTypes)
+                .MakeGenericType(inMemoryVariable.TypeInfo.Type.GetListItemType())
+                .GetConstructor(Type.EmptyTypes)
                 .Invoke(null);
 
-            int listLength = (int)listType.GetProperty("Count").GetValue(inMemoryVariable.Value, null);
-
-            if (indexFrom > listLength)
-            {
-                return "Index is out of bounds";
-            }
-
-            if (indexTo != null
-                && indexTo >= listLength)
-            {
-                return "Index is out of bounds";
-            }
-
-            var addedValues = new List<object>();
             for (var i = 0; i < listLength; i++)
             {
                 if (i < indexFrom)
@@ -114,102 +150,41 @@ namespace InteractiveConsole
                     continue;
                 }
 
-                var listItemValue = listType.GetProperty("Item").GetValue(inMemoryVariable.Value, new object[] { i });
-                var listItemValueType = listItemValue.GetType();
-
-                object value;
-                if (instanceProperty.PropertyType.GetListItemType().IsNumber()
-                    && listItemValueType.IsNumber())
-                {
-                    value = int.Parse(listItemValue.ToString());
-                }
-                else if (instanceProperty.PropertyType == typeof(InMemoryStorageVariable))
-                {
-                    value = listItemValue;
-                }
-                else
-                {
-                    if (instanceProperty.PropertyType.IsList())
-                    {
-                        if (instanceProperty.PropertyType.GetListItemType() != typeof(object)
-                            && instanceProperty.PropertyType.GetListItemType() != listItemValueType)
-                        {
-                            return "Parameter type does not match";
-                        }
-                        else
-                        {
-                            value = listItemValue;
-                        }
-                    }
-                    else
-                    {
-                        if (instanceProperty.PropertyType != typeof(object)
-                            && instanceProperty.PropertyType != listItemValueType)
-                        {
-                            return "Parameter type does not match";
-                        }
-                        else
-                        {
-                            value = listItemValue;
-                        }
-                    }
-                }
-
-                if (i == indexFrom)
-                {
-                    instancedList.Add(value);
-                    addedValues.Add(value);
-                    if (indexTo == null)
-                    {
-                        break;
-                    }
-                    continue;
-                }
-
-                if (i > indexTo)
+                if (i >= indexTo)
                 {
                     break;
                 }
 
-                instancedList.Add(value);
-                addedValues.Add(value);
+                var listItemValue = inMemoryVariable.TypeInfo.Type.GetProperty("Item").GetValue(inMemoryVariable.Value, new object[] { i });
+                instancedList.Add(listItemValue);
             }
 
-            if (indexTo == null
-                && instancedList.Count == 1)
-            {
-                instanceProperty.SetValue(CommandInstance, addedValues.FirstOrDefault());
-            }
-            else
-            {
-                instanceProperty.SetValue(CommandInstance, instancedList);
-            }
+            instanceProperty.SetValue(CommandInstance, instancedList);
 
             return string.Empty;
         }
 
         private string SetInMemoryVariableValue(PropertyInfo instanceProperty, InMemoryStorageVariable inMemoryVariable)
         {
-            if (instanceProperty.PropertyType.IsNumber()
+            var propertyTypeInfo = instanceProperty.PropertyType.ToTypeInfo();
+
+            if (propertyTypeInfo.IsNumber
                 && inMemoryVariable.TypeInfo.IsNumber)
             {
                 instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value.ToString());
             }
-            else if (instanceProperty.PropertyType == typeof(InMemoryStorageVariable))
+            else if (propertyTypeInfo.Type == typeof(InMemoryStorageVariable))
             {
                 instanceProperty.SetValue(CommandInstance, inMemoryVariable);
             }
             else
             {
-                if (instanceProperty.PropertyType != typeof(object)
-                    && instanceProperty.PropertyType != inMemoryVariable.Value.GetType())
+                if (!propertyTypeInfo.Equals(inMemoryVariable.TypeInfo))
                 {
-                    return "Parameter type does not match";
+                    return TypeDoesNotMatchErrorMessage;
                 }
-                else
-                {
-                    instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
-                }
+
+                instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
             }
 
             return string.Empty;
@@ -217,29 +192,39 @@ namespace InteractiveConsole
 
         private string SetParameterValue(PropertyInfo instanceProperty, Parameter parameter)
         {
-            object parameterValue = parameter.Value;
+            object convertedParameterValue = null;
+            var propertyTypeInfo = instanceProperty.PropertyType.ToTypeInfo();
 
-            if (instanceProperty.PropertyType.IsNumber()
+            if (propertyTypeInfo.IsNumber
                 && int.TryParse(parameter.Value, out var numberParameter))
             {
-                parameterValue = numberParameter;
+                convertedParameterValue = numberParameter;
             }
 
-            if (instanceProperty.PropertyType.IsEnum)
+            if (propertyTypeInfo.IsEnum
+                && Enum.TryParse(propertyTypeInfo.Type, parameter.Value.ToString(), out var parsedEnum))
             {
-                if (Enum.TryParse(instanceProperty.PropertyType, parameterValue.ToString(), out var parsedEnum))
-                {
-                    parameterValue = parsedEnum;
-                }
+                convertedParameterValue = parsedEnum;
             }
 
-            if (instanceProperty.PropertyType != parameterValue.GetType())
+            if (propertyTypeInfo.IsBool
+                && bool.TryParse(parameter.Value.ToString(), out var parsedBool))
             {
-                return "Parameter type does not match";
+                convertedParameterValue = parsedBool;
+            }
+
+            if (convertedParameterValue == null)
+            {
+                convertedParameterValue = parameter.Value;
+            }
+
+            if (!propertyTypeInfo.Equals(convertedParameterValue.ToTypeInfo()))
+            {
+                return TypeDoesNotMatchErrorMessage;
             }
             else
             {
-                instanceProperty.SetValue(CommandInstance, parameterValue);
+                instanceProperty.SetValue(CommandInstance, convertedParameterValue);
             }
 
             return string.Empty;

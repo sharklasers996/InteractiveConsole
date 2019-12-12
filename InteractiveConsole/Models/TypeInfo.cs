@@ -42,5 +42,22 @@ namespace InteractiveConsole.Models
 
             return true;
         }
+
+        public bool EqualsListType(TypeInfo other)
+        {
+            if (!other.IsList)
+            {
+                return false;
+            }
+
+            if ((other.IsListItemNumber && !IsNumber)
+                || (other.IsListItemString && !IsString)
+                || (other.IsListItemCustomObject && !IsCustomObject))
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
