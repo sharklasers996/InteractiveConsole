@@ -19,6 +19,11 @@ namespace InteractiveConsole.Storage
                 TypeInfo = value.ToTypeInfo()
             };
 
+            if (variable.TypeInfo.IsList)
+            {
+                variable.Length = (int)variable.TypeInfo.Type.GetProperty("Count").GetValue(value, null);
+            }
+
             Variables.Add(variable);
         }
 
