@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using InteractiveConsole.Models;
-
 namespace InteractiveConsole.Output
 {
     public interface IPrinter
@@ -15,7 +12,6 @@ namespace InteractiveConsole.Output
         void Highlight(string text);
         void None(string text);
         void Ascii(string text);
-        void Print(List<CommandInfo> commands);
         void NewLine();
     }
 }

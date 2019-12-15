@@ -9,8 +9,11 @@ namespace InteractiveConsole
     public class InteractiveConsoleBuilder
     {
         private string _title;
+        private bool _titleAscii;
+        private string _welcomeText;
         private readonly IUnityContainer _unityContainer;
         private PrinterTheme _theme = PrinterThemes.Default;
+        private bool _printAvailableCommandsOnStart = true;
 
         private void ConfigureContainer()
         {
@@ -35,6 +38,9 @@ namespace InteractiveConsole
             var runner = _unityContainer.Resolve<InteractiveConsoleRunner>();
             runner.Container = _unityContainer;
             runner.Title = _title;
+            runner.TitleAscii = _titleAscii;
+            runner.PrintAvailableCommandsOnStart = _printAvailableCommandsOnStart;
+            runner.WelcomeText = _welcomeText;
 
             runner.Run();
         }
@@ -42,6 +48,13 @@ namespace InteractiveConsole
         public InteractiveConsoleBuilder WithTitle(string title)
         {
             _title = title;
+            return this;
+        }
+
+        public InteractiveConsoleBuilder WithAsciiTitle(string title)
+        {
+            _title = title;
+            _titleAscii = true;
             return this;
         }
 
@@ -54,6 +67,18 @@ namespace InteractiveConsole
         public InteractiveConsoleBuilder WithTheme(PrinterTheme theme)
         {
             _theme = theme;
+            return this;
+        }
+
+        public InteractiveConsoleBuilder DoNotPrintCommandsOnStart()
+        {
+            _printAvailableCommandsOnStart = false;
+            return this;
+        }
+
+        public InteractiveConsoleBuilder WithWelcomeText(string text)
+        {
+            _welcomeText = text;
             return this;
         }
     }

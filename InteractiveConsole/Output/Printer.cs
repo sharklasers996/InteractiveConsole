@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using InteractiveConsole.Models;
 using Pastel;
 using Figgle;
 
@@ -89,35 +87,6 @@ namespace InteractiveConsole.Output
 
         public void NewLine()
         {
-            Console.WriteLine();
-        }
-
-        public void Print(List<CommandInfo> commands)
-        {
-            Console.WriteLine("Available commands".Pastel(_theme.InfoPrimary));
-            Console.WriteLine(new string('_', 50).Pastel(_theme.InfoPrimary));
-
-            foreach (var command in commands)
-            {
-                Console.Write($"{command.NameWithoutSuffix} ".Pastel(_theme.InfoPrimary));
-                var optionsString = string.Empty;
-                foreach (var option in command.Options)
-                {
-                    var requiredString = option.Required ? "required " : string.Empty;
-
-                    optionsString += option.Name.Pastel(_theme.Highlight);
-                    optionsString += $" ({requiredString}{option.TypeInfo.ToString()}) ".Pastel(_theme.InfoSecondary);
-                }
-
-                Console.Write(optionsString.Trim(new[] { ' ', ',' }));
-                Console.WriteLine();
-
-                if (!String.IsNullOrEmpty(command.Description))
-                {
-                    Console.WriteLine($"{command.Description}");
-                }
-                Console.WriteLine(new string('_', 50).Pastel(_theme.InfoPrimary));
-            }
             Console.WriteLine();
         }
     }

@@ -4,7 +4,7 @@ using Unity;
 using InteractiveConsole.Output;
 using InteractiveConsole.Storage;
 using InteractiveConsole.Models;
-using System.Collections.Generic;
+using InteractiveConsole.Commands;
 
 namespace InteractiveConsole
 {
@@ -12,6 +12,9 @@ namespace InteractiveConsole
     {
         public IUnityContainer Container { get; set; }
         public string Title { get; set; }
+        public bool TitleAscii { get; set; }
+        public string WelcomeText { get; set; }
+        public bool PrintAvailableCommandsOnStart { get; set; }
 
         private readonly ICommandDiscovery _commandDiscovery;
         private readonly IPrinter _printer;
@@ -32,13 +35,9 @@ namespace InteractiveConsole
 
         public void Run()
         {
-            if (!String.IsNullOrEmpty(Title))
-            {
-                _printer.NewLine();
-                _printer.Ascii(Title);
-                _printer.NewLine();
-            }
-            _printer.Print(_commandDiscovery.AvailableCommands);
+            PrintTitle();
+            PrintWelcomeText();
+            PrintCommands();
 
             while (true)
             {
@@ -53,7 +52,7 @@ namespace InteractiveConsole
                         continue;
                     }
 
-                    if (!TryCreateCommandInstance(command, out var commandInstance))
+                    if (!TryCreateCommandInstance(command.Type, out var commandInstance))
                     {
                         _printer.WriteLine().Error("Could not create command instance");
                         continue;
@@ -71,7 +70,6 @@ namespace InteractiveConsole
                         continue;
                     }
 
-
                     var result = commandInstance.Execute();
                     if (result != null)
                     {
@@ -85,6 +83,7 @@ namespace InteractiveConsole
             }
         }
 
+
         private bool TryGetCommand(ParameterParserResult parserResult, out CommandInfo command)
         {
             command = _commandDiscovery
@@ -94,9 +93,9 @@ namespace InteractiveConsole
             return command != null;
         }
 
-        private bool TryCreateCommandInstance(CommandInfo command, out BaseCommand commandInstance)
+        private bool TryCreateCommandInstance(Type commandType, out BaseCommand commandInstance)
         {
-            commandInstance = Container.Resolve(command.Type) as BaseCommand;
+            commandInstance = Container.Resolve(commandType) as BaseCommand;
             if (commandInstance != null)
             {
                 commandInstance.Printer = _printer;
@@ -120,6 +119,44 @@ namespace InteractiveConsole
             error = parameterProcessor.SetParameters();
 
             return String.IsNullOrEmpty(error);
+        }
+
+        private void PrintWelcomeText()
+        {
+            if (!String.IsNullOrEmpty(WelcomeText))
+            {
+                _printer.WriteLine().Info(WelcomeText);
+                _printer.NewLine();
+            }
+        }
+
+        private void PrintTitle()
+        {
+            if (!String.IsNullOrEmpty(Title))
+            {
+                _printer.NewLine();
+                if (TitleAscii)
+                {
+                    _printer.WriteLine().Ascii(Title);
+                }
+                else
+                {
+                    _printer.WriteLine().Highlight(Title);
+                }
+            }
+        }
+
+        private void PrintCommands()
+        {
+            if (!PrintAvailableCommandsOnStart)
+            {
+                return;
+            }
+
+            if (TryCreateCommandInstance(typeof(PrintCommandsCommand), out var command))
+            {
+                command.Execute();
+            }
         }
     }
 }
