@@ -94,7 +94,7 @@ namespace InteractiveConsole
             if (availableOptions.Any())
             {
                 input = input.Substring(0, lastSpaceIndex + 1);
-                input += availableOptions.First().Name + "=";
+                input += availableOptions.OrderByDescending(x => x.Required).First().Name + "=";
             }
 
             return input;
