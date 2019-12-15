@@ -9,7 +9,7 @@ namespace InteractiveConsole.Commands
     public class PrintVariableInfoCommand : BaseCommand
     {
         [CommandParameter]
-        public object Variable { get; set; }
+        public InMemoryStorageVariable Variable { get; set; }
 
         public override object Execute()
         {

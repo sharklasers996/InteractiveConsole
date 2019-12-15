@@ -32,10 +32,12 @@ namespace InteractiveConsole
             {
                 var error = string.Empty;
                 var parameter = ParserResult.Parameters?.FirstOrDefault(x => x.Name == option.Name);
-                if (parameter == null
-                    && option.Required)
+                if (parameter == null)
                 {
-                    return $"Option '{option.Name}' is required";
+                    if (option.Required)
+                    {
+                        return $"Option '{option.Name}' is required";
+                    }
                 }
 
                 var instanceProperty = commandType.GetProperty(parameter.Name);

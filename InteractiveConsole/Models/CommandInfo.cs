@@ -13,7 +13,14 @@ namespace InteractiveConsole.Models
             set
             {
                 _name = value;
-                NameWithoutSuffix = value.Substring(0, value.Length - "Command".Length);
+                if (_name.EndsWith("Command"))
+                {
+                    NameWithoutSuffix = value.Substring(0, value.Length - "Command".Length);
+                }
+                else
+                {
+                    NameWithoutSuffix = value;
+                }
             }
         }
         public string NameWithoutSuffix { get; private set; }
