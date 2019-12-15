@@ -14,19 +14,18 @@ namespace InteractiveConsole
         public string Title { get; set; }
 
         private readonly ICommandDiscovery _commandDiscovery;
-        private readonly IInputHandler _inputHandler;
         private readonly IPrinter _printer;
         private readonly IInMemoryStorage _inMemoryStorage;
+        private readonly ICommandReader _commandReader;
 
         public InteractiveConsoleRunner(
             ICommandDiscovery commandDiscovery,
-            IInputHandler inputHandler,
+            IInMemoryStorage inMemoryStorage,
             IPrinter printer,
-            IInMemoryStorage inMemoryStorage
-        )
+            ICommandReader commandReader)
         {
+            _commandReader = commandReader;
             _commandDiscovery = commandDiscovery;
-            _inputHandler = inputHandler;
             _printer = printer;
             _inMemoryStorage = inMemoryStorage;
         }
@@ -45,7 +44,7 @@ namespace InteractiveConsole
             {
                 try
                 {
-                    var input = _inputHandler.ReadLine();
+                    var input = _commandReader.ReadLine();
                     var parserResult = ParameterParser.Parse(input);
 
                     if (!TryGetCommand(parserResult, out var command))
@@ -101,7 +100,7 @@ namespace InteractiveConsole
             if (commandInstance != null)
             {
                 commandInstance.Printer = _printer;
-                commandInstance.InputHandler = _inputHandler;
+                commandInstance.Reader = Container.Resolve<IReader>();
 
                 return true;
             }

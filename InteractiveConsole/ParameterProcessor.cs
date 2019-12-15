@@ -38,6 +38,7 @@ namespace InteractiveConsole
                     {
                         return $"Option '{option.Name}' is required";
                     }
+                    continue;
                 }
 
                 var instanceProperty = commandType.GetProperty(parameter.Name);

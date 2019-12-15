@@ -1,37 +1,27 @@
-using System.Linq;
-using System.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using InteractiveConsole.Extensions;
 using InteractiveConsole.Helpers;
-using InteractiveConsole.Output;
 
 namespace InteractiveConsole
 {
-    public class InputHandler : IInputHandler
+    public abstract class BaseInputHandler
     {
-        private readonly Dictionary<string, Action> _keyActions;
-        private readonly List<string> _history = new List<string>();
-        private int _historyIndex;
+        protected readonly Dictionary<string, Action> _keyActions;
+        protected readonly List<string> _history = new List<string>();
+        protected int _historyIndex;
 
-        private readonly StringBuilder _text = new StringBuilder();
-        private int _cursorPosition;
-        private int _cursorLimitRight;
-        private int _cursorLimitLeft;
+        protected readonly StringBuilder _text = new StringBuilder();
+        protected int _cursorPosition;
+        protected int _cursorLimitRight;
+        protected int _cursorLimitLeft;
 
-        private bool IsStartOfLine { get { return _cursorPosition == 0 || _cursorPosition <= _cursorLimitLeft; } }
-        private bool IsEndOfLine { get { return _cursorPosition == _cursorLimitRight; } }
+        protected bool IsStartOfLine { get { return _cursorPosition == 0 || _cursorPosition <= _cursorLimitLeft; } }
+        protected bool IsEndOfLine { get { return _cursorPosition == _cursorLimitRight; } }
 
-        private readonly IAutoCompleteHandler _autoComplete;
-        private readonly PrinterTheme _printerTheme;
-
-        public InputHandler(IAutoCompleteHandler autoCompleteHandler, PrinterTheme printerTheme)
+        public BaseInputHandler()
         {
-            _printerTheme = printerTheme;
-            _autoComplete = autoCompleteHandler;
-
             _keyActions = new Dictionary<string, Action>
             {
                 ["ControlA"] = MoveCursorHome,
@@ -40,10 +30,6 @@ namespace InteractiveConsole
                 ["ControlE"] = MoveCursorEnd,
                 ["Backspace"] = DeleteLeft,
                 ["ControlD"] = DeleteRight,
-                ["Tab"] = () => Complete(next: true),
-                ["ShiftTab"] = () => Complete(next: false),
-                ["ControlN"] = () => CompleteSelection(next: true),
-                ["ControlP"] = () => CompleteSelection(next: false),
                 ["ControlBackspace"] = DeleteWordLeft,
                 ["AltD"] = DeleteWordRight,
                 ["UpArrow"] = PreviousCommandInHistory,
@@ -51,7 +37,7 @@ namespace InteractiveConsole
             };
         }
 
-        public string ReadLine(bool masked = false)
+        protected string ReadLine(bool masked = false)
         {
             var keyInfo = Console.ReadKey(true);
             while (keyInfo.Key != ConsoleKey.Enter)
@@ -90,135 +76,8 @@ namespace InteractiveConsole
             return result;
         }
 
-        public string Prompt(string prompt, bool masked = false)
-        {
-            _text.Clear();
-            _text.Append(prompt);
 
-            _cursorLimitLeft = _text.Length;
-            _cursorLimitRight = _text.Length;
-            _cursorPosition = _text.Length;
-
-            Console.Write(_text.ToString());
-
-            return ReadLine(masked).Replace(prompt, string.Empty);
-        }
-
-        public List<int> NumberSelection(string prompt)
-        {
-            _text.Clear();
-            _text.Append(prompt);
-
-            _cursorLimitLeft = _text.Length;
-            _cursorLimitRight = _text.Length;
-            _cursorPosition = _text.Length;
-
-            Console.Write(_text.ToString());
-
-            var numberStringList = ReadLine()
-                .Replace(prompt, string.Empty)
-                .Split(' ')
-                .ToList();
-
-            var numbersList = new List<int>();
-            foreach (var numberString in numberStringList)
-            {
-                if (int.TryParse(numberString, out int number))
-                {
-                    numbersList.Add(number);
-                    continue;
-                }
-                var rangeMatch = Regex.Match(numberString, @"\[(?<from>\d+)..(?<to>\d+)\]");
-                if (rangeMatch.Success)
-                {
-                    var from = int.Parse(rangeMatch.Groups["from"].ToString());
-                    var to = int.Parse(rangeMatch.Groups["to"].ToString());
-
-                    for (var i = from; i <= to; i++)
-                    {
-                        numbersList.Add(i);
-                    }
-                }
-            }
-
-            return numbersList;
-        }
-
-        private void Complete(bool next)
-        {
-            var result = _autoComplete.Complete(_text.ToString(), next);
-            _text.Clear();
-            _text.Append(result);
-
-            _cursorPosition = _text.Length;
-
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(result + new string(' ', _cursorLimitRight));
-            Console.SetCursorPosition(_text.Length, Console.CursorTop);
-
-            _cursorLimitRight = _text.Length;
-            //  ApplyColors();
-        }
-
-        private void CompleteSelection(bool next)
-        {
-            string result = _autoComplete.CompleteOptionSelection(_text.ToString(), _cursorPosition, next);
-            var lengthDifference = result.Length - _text.Length;
-
-            _text.Clear();
-            _text.Append(result);
-
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(result + new string(' ', _cursorLimitRight));
-
-            if (_text.Length < _cursorPosition)
-            {
-                _cursorPosition = _text.Length;
-            }
-            _cursorPosition += lengthDifference;
-            Console.SetCursorPosition(_cursorPosition, Console.CursorTop);
-
-            _cursorLimitRight = _text.Length;
-            MoveCursorRightUntilFirstSpaceOrEnd();
-            //  ApplyColors();
-        }
-
-        private void ApplyColors()
-        {
-            var text = _text.ToString();
-            var commandMatch = Regex.Match(text, @"(^\w+\s|\w+)");
-
-            var parameters = new List<Parameter>();
-            var parameterMatches = Regex.Matches(text, "(\\s(?<parameterName>\\w+)=((?<parameterValue>\\w+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")|\\s(?<parameterName>\\w+)=)");
-            foreach (Match match in parameterMatches)
-            {
-                parameters.Add(new Parameter
-                {
-                    Name = match.Groups["parameterName"].ToString(),
-                    Value = match.Groups["parameterValue"].ToString()
-                });
-            }
-
-            if (commandMatch.Success)
-            {
-                var wrote = 0;
-                using (new PersistConsolePosition())
-                {
-                    System.Console.SetCursorPosition(0, System.Console.CursorTop);
-                    System.Console.Write($"{commandMatch.Value}", Color.AliceBlue);
-                    wrote += commandMatch.Value.Length;
-                    foreach (var param in parameters)
-                    {
-                        wrote += $"{param.Name}=".Length;
-                        wrote += $"{param.Value}".Length;
-                        System.Console.Write($"{param.Name}=", Color.Azure);
-                        System.Console.Write($"{param.Value}");
-                    }
-                }
-            }
-        }
-
-        private void WriteCharMasked(char input)
+        protected void WriteCharMasked(char input)
         {
             if (IsEndOfLine)
             {
@@ -242,7 +101,7 @@ namespace InteractiveConsole
             _cursorLimitRight++;
         }
 
-        private void WriteChar(char input)
+        protected void WriteChar(char input)
         {
             if (IsEndOfLine)
             {
@@ -266,7 +125,7 @@ namespace InteractiveConsole
             _cursorLimitRight++;
         }
 
-        private void DeleteLeft()
+        protected void DeleteLeft()
         {
             if (IsStartOfLine)
             {
@@ -286,7 +145,7 @@ namespace InteractiveConsole
             _cursorLimitRight--;
         }
 
-        private void DeleteRight()
+        protected void DeleteRight()
         {
             if (IsEndOfLine)
             {
@@ -297,7 +156,7 @@ namespace InteractiveConsole
             DeleteLeft();
         }
 
-        private void DeleteWordLeft()
+        protected void DeleteWordLeft()
         {
             var textBeforeCursor = _text.ToString(0, _cursorPosition);
             var lastSpaceIndex = textBeforeCursor.LastIndexOf(' ');
@@ -313,7 +172,7 @@ namespace InteractiveConsole
             }
         }
 
-        private void DeleteWordRight()
+        protected void DeleteWordRight()
         {
             var textAfterCursor = _text
                 .ToString(_cursorPosition, _text.Length - _cursorPosition)
@@ -330,7 +189,7 @@ namespace InteractiveConsole
             }
         }
 
-        private void PreviousCommandInHistory()
+        protected void PreviousCommandInHistory()
         {
             if (_history.Count == 0)
             {
@@ -345,13 +204,13 @@ namespace InteractiveConsole
             PrintHistoryCommand();
         }
 
-        private void NextCommandInHistory()
+        protected void NextCommandInHistory()
         {
             if (_history.Count == 0)
             {
                 return;
             }
-            
+
             _historyIndex++;
             if (_historyIndex >= _history.Count)
             {
@@ -360,7 +219,7 @@ namespace InteractiveConsole
             PrintHistoryCommand();
         }
 
-        private void PrintHistoryCommand()
+        protected void PrintHistoryCommand()
         {
 
             _text.Clear();
@@ -374,19 +233,19 @@ namespace InteractiveConsole
             _cursorLimitRight = _text.Length;
         }
 
-        private void MoveCursorHome()
+        protected void MoveCursorHome()
         {
             Console.SetCursorPosition(_cursorLimitLeft, Console.CursorTop);
             _cursorPosition = _cursorLimitLeft;
         }
 
-        private void MoveCursorEnd()
+        protected void MoveCursorEnd()
         {
             Console.SetCursorPosition(_cursorLimitRight, Console.CursorTop);
             _cursorPosition = _cursorLimitRight;
         }
 
-        private void MoveCursorLeft()
+        protected void MoveCursorLeft()
         {
             if (IsStartOfLine)
             {
@@ -398,7 +257,7 @@ namespace InteractiveConsole
             _cursorPosition--;
         }
 
-        private void MoveCursorRight()
+        protected void MoveCursorRight()
         {
             if (IsEndOfLine)
             {
@@ -410,7 +269,7 @@ namespace InteractiveConsole
             _cursorPosition++;
         }
 
-        private void MoveCursorRightUntilFirstSpaceOrEnd()
+        protected void MoveCursorRightUntilFirstSpaceOrEnd()
         {
             if (_cursorPosition >= _text.Length - 1)
             {
@@ -436,5 +295,4 @@ namespace InteractiveConsole
             Console.SetCursorPosition(_cursorPosition, Console.CursorTop);
         }
     }
-
 }

@@ -18,8 +18,9 @@ namespace InteractiveConsole
             _unityContainer.RegisterType<ICommandDiscovery, CommandDiscovery>();
             _unityContainer.RegisterType<ITypeProvider, TypeProvider>();
             _unityContainer.RegisterType<IAutoCompleteHandler, AutoCompleteHandler>();
-            _unityContainer.RegisterType<IInputHandler, InputHandler>(new InjectionConstructor(_unityContainer.Resolve<IAutoCompleteHandler>(), _theme));
+            _unityContainer.RegisterType<ICommandReader, CommandReader>();
             _unityContainer.RegisterType<IPrinter, Printer>(new InjectionConstructor(_theme));
+            _unityContainer.RegisterType<IReader, Reader>(new InjectionConstructor(_theme));
         }
 
         public InteractiveConsoleBuilder()

@@ -1,4 +1,3 @@
-using System.Linq;
 using System;
 using System.Collections.Generic;
 using InteractiveConsole.Models;
@@ -7,7 +6,6 @@ using Figgle;
 
 namespace InteractiveConsole.Output
 {
-    // TODO: Clean up
     public class Printer : IPrinter
     {
         private readonly PrinterTheme _theme;
@@ -121,40 +119,6 @@ namespace InteractiveConsole.Output
                 Console.WriteLine(new string('_', 50).Pastel(_theme.InfoPrimary));
             }
             Console.WriteLine();
-        }
-
-        public string Selection(object item, Dictionary<string, string> availableActions)
-        {
-            Console.WriteLine(item?.ToString());
-
-            var actionsTextLength = 0;
-            for (var i = 0; i < availableActions.Count; i++)
-            {
-                var actionKeyString = $"({availableActions.ElementAt(i).Key}) ";
-                var actionValueString = $"{availableActions.ElementAt(i).Value} ";
-                Console.Write(actionKeyString.Pastel(_theme.Highlight));
-                Console.Write(actionValueString);
-
-                actionsTextLength += actionKeyString.Length;
-                actionsTextLength += actionValueString.Length;
-            }
-            Console.WriteLine();
-
-            var keyInfo = Console.ReadKey(true);
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(" ");
-            Console.SetCursorPosition(0, Console.CursorTop);
-            while (!availableActions.TryGetValue(keyInfo.KeyChar.ToString(), out _))
-            {
-                Console.WriteLine($"Selection '{keyInfo.KeyChar}' is not available".Pastel(_theme.Error));
-                keyInfo = Console.ReadKey(true);
-            }
-
-            Console.SetCursorPosition(0, Console.CursorTop - 1);
-            Console.Write(new string(' ', actionsTextLength));
-            Console.SetCursorPosition(0, Console.CursorTop - 1);
-
-            return keyInfo.KeyChar.ToString();
         }
     }
 }
