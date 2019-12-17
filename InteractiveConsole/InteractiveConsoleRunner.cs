@@ -5,6 +5,7 @@ using InteractiveConsole.Output;
 using InteractiveConsole.Storage;
 using InteractiveConsole.Models;
 using InteractiveConsole.Commands;
+using InteractiveConsole.Extensions;
 
 namespace InteractiveConsole
 {
@@ -73,7 +74,9 @@ namespace InteractiveConsole
                     var result = commandInstance.Execute();
                     if (result != null)
                     {
-                        _inMemoryStorage.Add(result, parserResult);
+                        var variable = _inMemoryStorage.Add(result, parserResult);
+                        _printer.Write().Info($"{variable.ToTypeString().ToFirstUpper()} added to storage @ ");
+                        _printer.WriteLine().Highlight($"#{variable.Id}");
                     }
                 }
                 catch (Exception ex)

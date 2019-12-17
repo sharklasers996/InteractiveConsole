@@ -5,7 +5,7 @@ namespace InteractiveConsole.Storage
     public interface IInMemoryStorage
     {
         List<InMemoryStorageVariable> Variables { get; }
-        void Add(object value, ParameterParserResult parserResult);
+        InMemoryStorageVariable Add(object value, ParameterParserResult parserResult);
         InMemoryStorageVariable TryGetVariable(string stringId);
     }
 }

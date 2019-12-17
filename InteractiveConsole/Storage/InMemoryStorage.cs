@@ -9,7 +9,7 @@ namespace InteractiveConsole.Storage
     {
         public List<InMemoryStorageVariable> Variables { get; } = new List<InMemoryStorageVariable>();
 
-        public void Add(object value, ParameterParserResult parserResult)
+        public InMemoryStorageVariable Add(object value, ParameterParserResult parserResult)
         {
             var variable = new InMemoryStorageVariable
             {
@@ -25,6 +25,8 @@ namespace InteractiveConsole.Storage
             }
 
             Variables.Add(variable);
+
+            return variable;
         }
 
         public InMemoryStorageVariable TryGetVariable(string stringId)

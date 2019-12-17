@@ -22,15 +22,14 @@ namespace InteractiveConsole.Commands
             }
 
             Printer.WriteLine().Info($"Storage contains {_inMemoryStorage.Variables.Count} variables.");
-            Printer.WriteLine().Info(new string('-', 50));
+            Printer.WriteLine().Info(new string('_', 50));
 
             foreach (var variable in _inMemoryStorage.Variables)
             {
-                Printer.Write().Info($"{variable.Id}: ");
-                Printer.WriteLine().Info2(variable.ToTypeString());
+                Printer.Write().Highlight($"{variable.Id}: ");
+                Printer.WriteLine().Info2($"{variable.ToTypeString()} returned by {variable.ProducedByCommand}");
             }
 
-            Printer.WriteLine().Info(new string('-', 50));
             Printer.NewLine();
 
             return null;

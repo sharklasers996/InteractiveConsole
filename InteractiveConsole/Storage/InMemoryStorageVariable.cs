@@ -53,7 +53,7 @@ namespace InteractiveConsole.Storage
                 }
             }
 
-            return $"{typeString} returned by {ProducedByCommand}";
+            return $"{typeString}";
         }
     }
 }

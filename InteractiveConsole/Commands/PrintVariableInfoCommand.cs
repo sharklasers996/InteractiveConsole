@@ -29,7 +29,7 @@ namespace InteractiveConsole.Commands
                 return null;
             }
 
-            Printer.WriteLine().Info($"Variable {Variable} is a {variable.ToTypeString()}");
+            Printer.WriteLine().Info($"Variable {Variable} is a {variable.ToTypeString()} returned by {variable.ProducedByCommand}");
 
             return null;
         }
