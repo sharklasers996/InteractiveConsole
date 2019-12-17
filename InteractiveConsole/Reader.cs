@@ -103,5 +103,15 @@ namespace InteractiveConsole
 
             return keyInfo.KeyChar.ToString();
         }
+
+        public bool YesNoPrompt(string text)
+        {
+            var result = LetterSelection(text, new Dictionary<string, string> {
+                { "y", "Yes" },
+                { "n", "No"}
+            });
+
+            return result == "y";
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace InteractiveConsole
     {
         string LetterSelection(object item, Dictionary<string, string> availableActions);
         List<int> NumberSelection(string prompt);
+        bool YesNoPrompt(string text);
         string Prompt(string prompt, bool masked = false);
     }
 }
