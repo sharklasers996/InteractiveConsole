@@ -30,7 +30,7 @@ namespace InteractiveConsole
             return ReadLine(masked).Replace(prompt, string.Empty);
         }
 
-        public List<int> NumberSelection(string prompt)
+        public List<int> NumberSelection(string prompt, int? rangeFrom = null, int? rangeTo = null)
         {
             _text.Clear();
             _text.Append(prompt);
@@ -51,6 +51,11 @@ namespace InteractiveConsole
             {
                 if (int.TryParse(numberString, out int number))
                 {
+                    if (IsOutOfRange(number, rangeFrom, rangeTo))
+                    {
+                        Console.WriteLine($"{number} is out of range.");
+                        continue;
+                    }
                     numbersList.Add(number);
                     continue;
                 }
@@ -62,12 +67,45 @@ namespace InteractiveConsole
 
                     for (var i = from; i <= to; i++)
                     {
+                        if (IsOutOfRange(number, rangeFrom, rangeTo))
+                        {
+                            Console.WriteLine($"{i} is out of range.");
+                            continue;
+                        }
                         numbersList.Add(i);
                     }
                 }
             }
 
             return numbersList;
+        }
+
+        private bool IsOutOfRange(int number, int? rangeFrom = null, int? rangeTo = null)
+        {
+            if (rangeFrom == null
+                && rangeTo == null)
+            {
+                return false;
+            }
+
+            if (rangeFrom != null
+                && number < rangeFrom)
+            {
+                return true;
+            }
+
+            if (rangeTo != null
+                && number > rangeTo)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public string LetterSelection(Dictionary<string, string> availableActions)
+        {
+            return LetterSelection(null, availableActions);
         }
 
         public string LetterSelection(object item, Dictionary<string, string> availableActions)
