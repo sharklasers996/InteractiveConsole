@@ -71,6 +71,7 @@ namespace InteractiveConsole
                         continue;
                     }
 
+                    _printer.NewLine();
                     var result = commandInstance.Execute();
                     if (result != null)
                     {
