@@ -15,38 +15,27 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
-            if (!(Variable is InMemoryStorageVariable variable))
-            {
-                if (Variable.GetType().IsList())
-                {
-                    foreach (var v in (IList)Variable)
-                    {
-                        Printer.WriteLine().Info(v.ToString());
-                    }
-                }
-                else
-                {
-                    Printer.WriteLine().Info(Variable.ToString());
-                }
-                return null;
-            }
-
-            Printer.WriteLine().Info($"Variable {Variable} is a {variable.ToTypeString()} returned by {variable.ProducedByCommand}");
+            Printer.WriteLine().Info($"Variable {Variable} is a {Variable.ToTypeString()} returned by {Variable.ProducedByCommand}");
 
             if (Variable.TypeInfo.IsList)
             {
-                Printer.WriteLine().Info("Variable contents: ");
+                var rangeTo = 5;
+                if (Variable.Length < 5)
+                {
+                    rangeTo = Variable.Length;
+                }
+
+                Printer.WriteLine().Info($"First {rangeTo} values:");
                 Printer.NewLine();
-                for (var i = 0; i < Variable.Length; i++)
+                for (var i = 0; i < rangeTo; i++)
                 {
                     var listItem = Variable.TypeInfo.Type.GetProperty("Item").GetValue(Variable.Value, new object[] { i });
                     Printer.WriteLine().Info2($"#{i}: {listItem.ToString()}");
-                    Printer.NewLine();
                 }
             }
             else if (!String.IsNullOrEmpty(Variable.ValueString.Trim()))
             {
-                Printer.WriteLine().Info("Variable content: ");
+                Printer.WriteLine().Info("Variable value: ");
                 Printer.NewLine();
                 Printer.WriteLine().Info2(Variable.ValueString);
             }
