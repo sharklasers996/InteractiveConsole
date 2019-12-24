@@ -1,8 +1,10 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 using System;
 using InteractiveConsole.Attributes;
 using InteractiveConsole.Models;
 using InteractiveConsole.Constants;
+using System.Collections.Generic;
 
 namespace InteractiveConsole.Commands
 {
@@ -11,9 +13,6 @@ namespace InteractiveConsole.Commands
     {
         private readonly ICommandDiscovery _commandDiscovery;
 
-        [CommandParameter]
-        public string Category { get; set; }
-
         public PrintCommandsCommand(ICommandDiscovery commandDiscovery)
         {
             _commandDiscovery = commandDiscovery;
@@ -21,70 +20,85 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
-            if (String.IsNullOrEmpty(Category))
-            {
-                Printer.WriteLine().Highlight("All commands");
-            }
-            else
-            {
-                Printer.WriteLine().Highlight($"{Category} commands");
-            }
-            Printer.WriteLine().Info(new string('_', 50));
+            var categories = _commandDiscovery
+                .AvailableCommands
+                .ToLookup(x => x.Category, y => y);
 
-            foreach (var command in _commandDiscovery.AvailableCommands.Where(CommandInCategory))
+            Printer.WriteLine().Info("Available commands");
+            var index = 0;
+            foreach (var category in categories.OrderBy(x => x.Key))
             {
-                Printer.Write().Info($"{command.NameWithoutSuffix} ");
-                foreach (var option in command.Options)
+                var categoryName = category.Key;
+                if (String.IsNullOrEmpty(categoryName))
                 {
-                    var requiredString = option.Required ? "required " : string.Empty;
-
-                    Printer.Write().Highlight(option.Name);
-                    Printer.Write().Info2($" ({requiredString}{option.TypeInfo.ToString()}) ");
+                    categoryName = "Uncategorized";
                 }
-                Printer.NewLine();
-                if (!String.IsNullOrEmpty(command.Description))
-                {
-                    Printer.WriteLine().None($"{command.Description}");
-                }
+                Printer.WriteLine().Highlight($"{categoryName}");
 
-                if (String.IsNullOrEmpty(Category))
+                foreach (var command in category.OrderBy(x => x.Name))
                 {
-                    var catString = $"{command.Category} category";
-                    if (String.IsNullOrEmpty(command.Category))
+                    Printer.Write().Highlight($"#{index} ");
+                    Printer.Write().Info($"{command.NameWithoutSuffix} ");
+                    foreach (var option in command.Options)
                     {
-                        catString = "Uncategorized";
-                    }
-                    Printer.WriteLine().Info2(catString);
-                }
+                        var requiredString = option.Required ? "required " : string.Empty;
 
-                Printer.WriteLine().Info(new string('_', 50));
+                        Printer.Write().Highlight(option.Name);
+                        Printer.Write().Info2($" ({requiredString}{option.TypeInfo.ToString()}) ");
+                    }
+                    Printer.NewLine();
+                    index++;
+                }
             }
 
-            Printer.NewLine();
+            string selection;
+            do
+            {
+                selection = Reader.LetterSelection(
+                    new Dictionary<string, string> {
+                    { "s", "Select command for more info" },
+                    { "q", "Quit to console" }
+                });
+
+                if (selection == "s")
+                {
+                    var orderedCommands = _commandDiscovery
+                        .AvailableCommands
+                        .OrderBy(x => x.Category)
+                        .ThenBy(x => x.Name)
+                        .ToList();
+                    var commandIndices = Reader.NumberSelection("Enter command numbers: ", 0, index);
+                    foreach (var i in commandIndices.OrderBy(x => x))
+                    {
+                        var command = orderedCommands[i];
+
+                        Printer.Write().Highlight($"#{i} ");
+                        Printer.WriteLine().Info(command.NameWithoutSuffix);
+                        foreach (var option in command.Options)
+                        {
+                            Printer.Write().Info($"\t{option.Name} ");
+                            var requiredString = option.Required ? "required " : string.Empty;
+
+                            Printer.WriteLine().Info2($"({requiredString}{option.TypeInfo.ToString()})");
+                            if (!option.AvailableValues.Any())
+                            {
+                                continue;
+                            }
+
+                            foreach (var value in option.AvailableValues)
+                            {
+                                Printer.WriteLine().Info2($"\t\t{value}");
+                            }
+                        }
+
+                        Printer.NewLine();
+                        Printer.WriteLine().None(command.Description);
+                    }
+                }
+            }
+            while (selection != "q");
 
             return null;
-        }
-
-        private bool CommandInCategory(CommandInfo commandInfo)
-        {
-            if (String.IsNullOrEmpty(Category))
-            {
-                return true;
-            }
-
-            if (String.IsNullOrEmpty(commandInfo.Category)
-                && String.IsNullOrEmpty(Category))
-            {
-                return true;
-            }
-
-            if (!String.IsNullOrEmpty(commandInfo.Category)
-                && commandInfo.Category.Equals(Category))
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

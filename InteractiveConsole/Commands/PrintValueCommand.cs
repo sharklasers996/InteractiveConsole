@@ -6,7 +6,7 @@ using InteractiveConsole.Storage;
 namespace InteractiveConsole.Commands
 {
     [Command(description: "Prints variable type and value", Category = CommandCategories.BuiltIn)]
-    public class PrintVariableValueCommand : BaseCommand
+    public class PrintValueCommand : BaseCommand
     {
         [CommandParameter]
         [Required]
@@ -30,31 +30,21 @@ namespace InteractiveConsole.Commands
                     }
 
                     var listItem = Variable.TypeInfo.Type.GetProperty("Item").GetValue(Variable.Value, new object[] { ListIndex });
-                    Printer.WriteLine().Info($"Value at index {ListIndex}:");
-                    Printer.NewLine();
+                    Printer.Write().Highlight($"#{ListIndex} ");
                     Printer.WriteLine().Info2(listItem.ToString());
                 }
                 else
                 {
-                    var rangeTo = 5;
-                    if (Variable.Length < 5)
-                    {
-                        rangeTo = Variable.Length;
-                    }
-
-                    Printer.WriteLine().Info($"First {rangeTo} values:");
-                    Printer.NewLine();
-                    for (var i = 0; i < rangeTo; i++)
+                    for (var i = 0; i < Variable.Length; i++)
                     {
                         var listItem = Variable.TypeInfo.Type.GetProperty("Item").GetValue(Variable.Value, new object[] { i });
-                        Printer.WriteLine().Info2($"#{i}: {listItem.ToString()}");
+                        Printer.Write().Highlight($"#{i} ");
+                        Printer.WriteLine().Info2(listItem.ToString());
                     }
                 }
             }
             else if (!String.IsNullOrEmpty(Variable.ValueString.Trim()))
             {
-                Printer.WriteLine().Info("Variable value: ");
-                Printer.NewLine();
                 Printer.WriteLine().Info2(Variable.ValueString);
             }
 
