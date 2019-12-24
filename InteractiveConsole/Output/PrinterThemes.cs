@@ -23,5 +23,15 @@ namespace InteractiveConsole.Output
             Success = Color.FromArgb(0, 168, 222),
             Highlight = Color.FromArgb(255, 194, 14)
         };
+        
+        public static PrinterTheme Neon = new PrinterTheme
+        {
+            InfoPrimary = Color.FromArgb(255, 121, 198),
+            InfoSecondary = Color.FromArgb(57, 86, 153),
+            Error = Color.FromArgb(177, 62, 52),
+            Progress = Color.FromArgb(247, 140, 93),
+            Success = Color.FromArgb(105, 177, 121),
+            Highlight = Color.FromArgb(80, 250, 123)
+        };
     }
 }
