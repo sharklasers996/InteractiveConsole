@@ -94,14 +94,27 @@ namespace InteractiveConsole
             }
 
             var propertyTypeInfo = instanceProperty.PropertyType.ToTypeInfo();
-
             if (propertyTypeInfo.IsList
-                && propertyTypeInfo.Equals(inMemoryVariable.TypeInfo))
+                && !inMemoryVariable.TypeInfo.IsList
+                && !inMemoryVariable.TypeInfo.EqualsListType(propertyTypeInfo))
             {
                 return TypeDoesNotMatchErrorMessage;
             }
-
-            if (!propertyTypeInfo.EqualsListType(inMemoryVariable.TypeInfo))
+            else if (propertyTypeInfo.IsList
+              && inMemoryVariable.TypeInfo.IsList
+              && !inMemoryVariable.TypeInfo.Equals(propertyTypeInfo))
+            {
+                return TypeDoesNotMatchErrorMessage;
+            }
+            else if (!propertyTypeInfo.IsList
+              && !inMemoryVariable.TypeInfo.IsList
+              && !inMemoryVariable.TypeInfo.Equals(propertyTypeInfo))
+            {
+                return TypeDoesNotMatchErrorMessage;
+            }
+            else if (!propertyTypeInfo.IsList
+                && inMemoryVariable.TypeInfo.IsList
+                && !propertyTypeInfo.EqualsListType(inMemoryVariable.TypeInfo))
             {
                 return TypeDoesNotMatchErrorMessage;
             }
