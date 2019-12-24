@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using InteractiveConsole.Models;
 
@@ -41,29 +42,31 @@ namespace InteractiveConsole.Extensions
             return options[nextIndex];
         }
 
-        public static CommandOptionInfo CyclePrevious(this List<CommandOptionInfo> options, CommandOptionInfo currentOption)
+        public static CommandOptionInfo CyclePrevious(this List<CommandOptionInfo> commands, CommandOptionInfo currentOption)
         {
-            var optionIndex = options.IndexOf(currentOption);
+            var orderedCommands = commands.OrderBy(x => x.Name).ToList();
+            var optionIndex = orderedCommands.IndexOf(currentOption);
             var nextIndex = optionIndex - 1;
             if (nextIndex < 0)
             {
-                nextIndex = options.Count - 1;
+                nextIndex = orderedCommands.Count - 1;
             }
 
-            return options[nextIndex];
+            return orderedCommands[nextIndex];
         }
 
         public static CommandInfo CycleNext(this List<CommandInfo> commands, CommandInfo currentCommand)
         {
-            var currentCommandIndex = commands.IndexOf(currentCommand);
+            var orderedCommands = commands.OrderBy(x => x.Name).ToList();
+            var currentCommandIndex = orderedCommands.IndexOf(currentCommand);
 
             var nextIndex = currentCommandIndex + 1;
-            if (nextIndex >= commands.Count)
+            if (nextIndex >= orderedCommands.Count)
             {
                 nextIndex = 0;
             }
 
-            return commands[nextIndex];
+            return orderedCommands[nextIndex];
         }
 
         public static CommandInfo CyclePrevious(this List<CommandInfo> commands, CommandInfo currentCommand)
