@@ -33,7 +33,8 @@ namespace InteractiveConsole.Commands
                 {
                     categoryName = "Uncategorized";
                 }
-                Printer.WriteLine().Highlight($"{categoryName}");
+                Printer.Write().Highlight("> ");
+                Printer.WriteLine().Info(categoryName);
 
                 foreach (var command in category.OrderBy(x => x.Name))
                 {
