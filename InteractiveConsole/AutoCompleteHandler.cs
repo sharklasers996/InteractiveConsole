@@ -31,7 +31,11 @@ namespace InteractiveConsole
 
         private string CompleteCommand(string input, bool next)
         {
-            var command = _commandDiscovery.AvailableCommands.FirstOrDefault(x => x.NameWithoutSuffix.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
+            var command = _commandDiscovery
+                .AvailableCommands
+                .OrderBy(x => x.Name)
+                .FirstOrDefault(x => x.NameWithoutSuffix.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
+
             if (command == null)
             {
                 return input;

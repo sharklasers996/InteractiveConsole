@@ -32,27 +32,28 @@ namespace InteractiveConsole.Extensions
 
         public static CommandOptionInfo CycleNext(this List<CommandOptionInfo> options, CommandOptionInfo currentOption)
         {
-            var optionIndex = options.IndexOf(currentOption);
+            var orderedOptions = options.OrderBy(x => x.Name).ToList();
+            var optionIndex = orderedOptions.IndexOf(currentOption);
             var nextIndex = optionIndex + 1;
-            if (nextIndex >= options.Count)
+            if (nextIndex >= orderedOptions.Count)
             {
                 nextIndex = 0;
             }
 
-            return options[nextIndex];
+            return orderedOptions[nextIndex];
         }
 
-        public static CommandOptionInfo CyclePrevious(this List<CommandOptionInfo> commands, CommandOptionInfo currentOption)
+        public static CommandOptionInfo CyclePrevious(this List<CommandOptionInfo> options, CommandOptionInfo currentOption)
         {
-            var orderedCommands = commands.OrderBy(x => x.Name).ToList();
-            var optionIndex = orderedCommands.IndexOf(currentOption);
+            var orderedOptions = options.OrderBy(x => x.Name).ToList();
+            var optionIndex = orderedOptions.IndexOf(currentOption);
             var nextIndex = optionIndex - 1;
             if (nextIndex < 0)
             {
-                nextIndex = orderedCommands.Count - 1;
+                nextIndex = orderedOptions.Count - 1;
             }
 
-            return orderedCommands[nextIndex];
+            return orderedOptions[nextIndex];
         }
 
         public static CommandInfo CycleNext(this List<CommandInfo> commands, CommandInfo currentCommand)
@@ -71,15 +72,16 @@ namespace InteractiveConsole.Extensions
 
         public static CommandInfo CyclePrevious(this List<CommandInfo> commands, CommandInfo currentCommand)
         {
-            var currentCommandIndex = commands.IndexOf(currentCommand);
+            var orderedCommands = commands.OrderBy(x => x.Name).ToList();
+            var currentCommandIndex = orderedCommands.IndexOf(currentCommand);
 
             var nextIndex = currentCommandIndex - 1;
             if (nextIndex < 0)
             {
-                nextIndex = commands.Count - 1;
+                nextIndex = orderedCommands.Count - 1;
             }
 
-            return commands[nextIndex];
+            return orderedCommands[nextIndex];
         }
     }
 }
