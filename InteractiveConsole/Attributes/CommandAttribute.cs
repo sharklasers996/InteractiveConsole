@@ -6,9 +6,12 @@ namespace InteractiveConsole.Attributes
     public class CommandAttribute : Attribute
     {
         public string Description { get; set; }
-        public CommandAttribute(string description = null)
+        public string Category { get; set; }
+
+        public CommandAttribute(string description = null, string category = null)
         {
             Description = description;
+            Category = category;
         }
     }
 }

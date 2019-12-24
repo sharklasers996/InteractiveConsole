@@ -39,9 +39,11 @@ namespace InteractiveConsole
                 if (attribute != null)
                 {
                     var commandAttribute = attribute as CommandAttribute;
+
                     yield return new CommandInfo
                     {
                         Description = commandAttribute.Description,
+                        Category = commandAttribute.Category,
                         Name = type.Name,
                         Type = type
                     };
@@ -65,7 +67,7 @@ namespace InteractiveConsole
                             optionSelections.Add(e.ToString());
                         }
                     }
-                    
+
                     var optionInfo = new CommandOptionInfo
                     {
                         Name = property.Name,

@@ -11,11 +11,16 @@ namespace InteractiveConsole.Storage
 
         public InMemoryStorageVariable Add(object value, ParameterParserResult parserResult)
         {
+            return Add(value, parserResult.CommandName);
+        }
+
+        public InMemoryStorageVariable Add(object value, string producedBy)
+        {
             var variable = new InMemoryStorageVariable
             {
                 Id = Variables.Any() ? Variables.Max(x => x.Id) + 1 : 1,
                 Value = value,
-                ProducedByCommand = parserResult.CommandName,
+                ProducedByCommand = producedBy,
                 TypeInfo = value.ToTypeInfo()
             };
 

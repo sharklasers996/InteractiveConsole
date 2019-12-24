@@ -1,10 +1,11 @@
 using System.Linq;
 using InteractiveConsole.Attributes;
+using InteractiveConsole.Constants;
 using InteractiveConsole.Storage;
 
 namespace InteractiveConsole.Commands
 {
-    [Command(description: "Prints a list of variables in memory")]
+    [Command(Description = "Prints a list of variables in memory", Category = CommandCategories.BuiltIn)]
     public class PrintVariablesCommand : BaseCommand
     {
         private readonly IInMemoryStorage _inMemoryStorage;

@@ -27,5 +27,6 @@ namespace InteractiveConsole.Models
         public List<CommandOptionInfo> Options { get; set; }
         public Type Type { get; set; }
         public string Description { get; set; }
+        public string Category { get; set; }
     }
 }

@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using InteractiveConsole.Attributes;
+using InteractiveConsole.Constants;
 
 namespace InteractiveConsole.Commands
 {
-    [Command(description: "Prints information about command and its options")]
+    [Command(Description = "Prints information about command and its options", Category = CommandCategories.BuiltIn)]
     public class PrintCommandInfoCommand : BaseCommand
     {
         [CommandParameter]

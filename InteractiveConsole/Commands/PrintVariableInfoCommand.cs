@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using InteractiveConsole.Attributes;
-using InteractiveConsole.Extensions;
+using InteractiveConsole.Constants;
 using InteractiveConsole.Storage;
 
 namespace InteractiveConsole.Commands
 {
-    [Command(description: "Prints variable's type and value")]
+    [Command(description: "Prints variable type and value", Category = CommandCategories.BuiltIn)]
     public class PrintVariableInfoCommand : BaseCommand
     {
         [CommandParameter]
