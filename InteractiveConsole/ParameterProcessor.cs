@@ -6,6 +6,7 @@ using InteractiveConsole.Extensions;
 using InteractiveConsole.Storage;
 using System.Collections.Generic;
 using System.Collections;
+using InteractiveConsole.Models.Storage;
 
 namespace InteractiveConsole
 {

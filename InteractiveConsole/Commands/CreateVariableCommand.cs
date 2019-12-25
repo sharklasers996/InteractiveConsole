@@ -20,10 +20,15 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
-            var variable = _inMemoryStorage.Add(Value, "User");
+            var storageResult = _inMemoryStorage.Add(Value, "User");
 
-            Printer.Write().Info($"{variable.ToTypeString().ToFirstUpper()} added to storage @ ");
-            Printer.WriteLine().Highlight($"#{variable.Id}");
+            Printer.Write().Info($"{storageResult.Variable.ToTypeString().ToFirstUpper()} added to storage @ ");
+            Printer.WriteLine().Highlight($"#{storageResult.Variable.Id}");
+
+            if (!storageResult.Persisted)
+            {
+                Printer.WriteLine().Info("Could not save variable to persistent storage");
+            }
 
             return null;
         }

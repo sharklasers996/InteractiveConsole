@@ -2,8 +2,8 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using InteractiveConsole.Attributes;
-using InteractiveConsole.Storage;
 using InteractiveConsole.Constants;
+using InteractiveConsole.Models.Storage;
 
 namespace InteractiveConsole.Commands
 {

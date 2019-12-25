@@ -28,7 +28,7 @@ namespace InteractiveConsole.Commands
             foreach (var variable in _inMemoryStorage.Variables)
             {
                 Printer.Write().Highlight($"{variable.Id}: ");
-                Printer.WriteLine().Info2($"{variable.ToTypeString()} returned by {variable.ProducedByCommand}");
+                Printer.WriteLine().Info2($"{variable.ToTypeString()}, {variable.Description}");
             }
 
             Printer.NewLine();

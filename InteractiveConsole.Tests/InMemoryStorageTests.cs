@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using InteractiveConsole.Models.Storage;
 using InteractiveConsole.Storage;
+using InteractiveConsole.Storage.Persistent;
+using NSubstitute;
 using Xunit;
 
 namespace InteractiveConsole.Tests
@@ -12,7 +15,9 @@ namespace InteractiveConsole.Tests
 
         public InMemoryStorageTests()
         {
-            _inMemoryStorage = new InMemoryStorage();
+            var persistentStorage = Substitute.For<IPersistentVariableStorage>();
+            persistentStorage.Get().Returns(new List<InMemoryStorageVariable>());
+            _inMemoryStorage = new InMemoryStorage(persistentStorage);
         }
 
         [Fact]

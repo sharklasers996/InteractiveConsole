@@ -6,6 +6,7 @@ using InteractiveConsole.Models;
 using InteractiveConsole.Storage;
 using NSubstitute;
 using Xunit;
+using InteractiveConsole.Models.Storage;
 
 namespace InteractiveConsole.Tests
 {

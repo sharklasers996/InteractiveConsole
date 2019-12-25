@@ -1,7 +1,7 @@
 using System;
 using InteractiveConsole.Attributes;
 using InteractiveConsole.Constants;
-using InteractiveConsole.Storage;
+using InteractiveConsole.Models.Storage;
 
 namespace InteractiveConsole.Commands
 {
@@ -17,7 +17,7 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
-            Printer.WriteLine().Info($"Variable {Variable} is a {Variable.ToTypeString()} returned by {Variable.ProducedByCommand}");
+            Printer.WriteLine().Info($"Variable {Variable} is a {Variable.ToTypeString()}, {Variable.Description}");
 
             if (Variable.TypeInfo.IsList)
             {

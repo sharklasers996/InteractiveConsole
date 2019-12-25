@@ -75,9 +75,14 @@ namespace InteractiveConsole
                     var result = commandInstance.Execute();
                     if (result != null)
                     {
-                        var variable = _inMemoryStorage.Add(result, parserResult);
-                        _printer.Write().Info($"{variable.ToTypeString().ToFirstUpper()} added to storage @ ");
-                        _printer.WriteLine().Highlight($"#{variable.Id}");
+                        var storageResult = _inMemoryStorage.Add(result, parserResult);
+                        _printer.Write().Info($"{storageResult.Variable.ToTypeString().ToFirstUpper()} added to storage @ ");
+                        _printer.WriteLine().Highlight($"#{storageResult.Variable.Id}");
+
+                        if (!storageResult.Persisted)
+                        {
+                            _printer.WriteLine().Info("Could not save variable to persistent storage");
+                        }
                     }
                 }
                 catch (Exception ex)
