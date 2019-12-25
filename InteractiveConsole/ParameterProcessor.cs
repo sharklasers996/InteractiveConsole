@@ -211,6 +211,7 @@ namespace InteractiveConsole
         {
             object convertedParameterValue = null;
             var propertyTypeInfo = instanceProperty.PropertyType.ToTypeInfo();
+            var parameterTypeInfo = parameter.Value.ToTypeInfo();
 
             if (propertyTypeInfo.IsNumber
                 && int.TryParse(parameter.Value, out var numberParameter))
@@ -235,7 +236,18 @@ namespace InteractiveConsole
                 convertedParameterValue = parameter.Value;
             }
 
-            if (!propertyTypeInfo.Equals(convertedParameterValue.ToTypeInfo()))
+            if (propertyTypeInfo.IsList
+                && parameterTypeInfo.EqualsListType(propertyTypeInfo))
+            {
+                var instancedList = (IList)typeof(List<>)
+                    .MakeGenericType(propertyTypeInfo.Type.GetListItemType())
+                    .GetConstructor(Type.EmptyTypes)
+                    .Invoke(null);
+
+                instancedList.Add(parameter.Value);
+                instanceProperty.SetValue(CommandInstance, instancedList);
+            }
+            else if (!propertyTypeInfo.Equals(convertedParameterValue.ToTypeInfo()))
             {
                 return TypeDoesNotMatchErrorMessage;
             }

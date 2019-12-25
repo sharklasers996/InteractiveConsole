@@ -124,6 +124,21 @@ namespace InteractiveConsole.Tests
         }
 
         [Fact]
+        public void SetParameters_should_set_single_object_as_list_if_types_match()
+        {
+            // arrange
+            var propertyName = "StringsProp";
+            var propertyValue = "prop_value";
+
+            // act
+            var command = CreateCommandAndSetParameters(propertyName, propertyValue);
+
+            // assert
+            command.StringsProp.Count.Should().Be(1);
+            command.StringsProp.FirstOrDefault().Should().Be(propertyValue);
+        }
+
+        [Fact]
         public void SetParameters_should_set_list_of_custom_objects_with_index_range()
         {
             // arrange
@@ -482,6 +497,7 @@ namespace InteractiveConsole.Tests
         public int IntProp { get; set; }
         public TestObject ObjectProp { get; set; }
         public List<TestObject> ObjectsProp { get; set; }
+        public List<string> StringsProp { get; set; }
         public InMemoryStorageVariable InMemoryStorageVariableProp { get; set; }
 
         public override object Execute()
