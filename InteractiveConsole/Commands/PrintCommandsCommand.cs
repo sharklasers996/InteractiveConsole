@@ -33,8 +33,8 @@ namespace InteractiveConsole.Commands
                 {
                     categoryName = "Uncategorized";
                 }
-                Printer.Write().Highlight("> ");
-                Printer.WriteLine().Info(categoryName);
+                Printer.Write().Info("> ");
+                Printer.WriteLine().Highlight(categoryName);
 
                 foreach (var command in category.OrderBy(x => x.Name))
                 {
@@ -50,6 +50,8 @@ namespace InteractiveConsole.Commands
                     Printer.NewLine();
                     index++;
                 }
+
+                Printer.NewLine();
             }
 
             string selection;
