@@ -196,12 +196,25 @@ namespace InteractiveConsole
             }
             else
             {
-                if (!propertyTypeInfo.Equals(inMemoryVariable.TypeInfo))
+                if (propertyTypeInfo.IsList
+                    && inMemoryVariable.TypeInfo.EqualsListType(propertyTypeInfo))
+                {
+                    var instancedList = (IList)typeof(List<>)
+                        .MakeGenericType(propertyTypeInfo.Type.GetListItemType())
+                        .GetConstructor(Type.EmptyTypes)
+                        .Invoke(null);
+
+                    instancedList.Add(inMemoryVariable.Value);
+                    instanceProperty.SetValue(CommandInstance, instancedList);
+                }
+                else if (!propertyTypeInfo.Equals(inMemoryVariable.TypeInfo))
                 {
                     return TypeDoesNotMatchErrorMessage;
                 }
-
-                instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
+                else
+                {
+                    instanceProperty.SetValue(CommandInstance, inMemoryVariable.Value);
+                }
             }
 
             return string.Empty;
