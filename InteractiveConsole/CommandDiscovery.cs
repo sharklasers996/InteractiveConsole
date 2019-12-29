@@ -32,22 +32,25 @@ namespace InteractiveConsole
         private IEnumerable<CommandInfo> GetCommands()
         {
             var types = _typeProvider.GetTypes();
+            var commandTypes = types.Where(x => x.GetTypeInfo().IsSubclassOf(typeof(BaseCommand)));
 
-            foreach (var type in types)
+            foreach (var type in commandTypes)
             {
+                var commandInfo = new CommandInfo
+                {
+                    Name = type.Name,
+                    Type = type
+                };
+
                 var attribute = type.GetCustomAttribute(typeof(CommandAttribute));
                 if (attribute != null)
                 {
                     var commandAttribute = attribute as CommandAttribute;
-
-                    yield return new CommandInfo
-                    {
-                        Description = commandAttribute.Description,
-                        Category = commandAttribute.Category,
-                        Name = type.Name,
-                        Type = type
-                    };
+                    commandInfo.Description = commandAttribute.Description;
+                    commandInfo.Category = commandAttribute.Category;
                 }
+
+                yield return commandInfo;
             }
         }
 

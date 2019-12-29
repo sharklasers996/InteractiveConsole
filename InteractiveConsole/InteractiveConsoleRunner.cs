@@ -94,6 +94,13 @@ namespace InteractiveConsole
                .AvailableCommands
                .FirstOrDefault(x => x.Name == parserResult.CommandName);
 
+            if (command == null)
+            {
+                command = _commandDiscovery
+                    .AvailableCommands
+                    .FirstOrDefault(x => x.NameWithoutSuffix == parserResult.CommandNameWithoutSuffix);
+            }
+
             return command != null;
         }
 
