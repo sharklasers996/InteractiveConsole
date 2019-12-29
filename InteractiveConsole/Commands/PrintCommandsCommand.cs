@@ -1,8 +1,6 @@
-using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 using System;
 using InteractiveConsole.Attributes;
-using InteractiveConsole.Models;
 using InteractiveConsole.Constants;
 using System.Collections.Generic;
 
@@ -11,7 +9,11 @@ namespace InteractiveConsole.Commands
     [Command(Description = "Prints this information", Category = CommandCategories.BuiltIn)]
     public class PrintCommandsCommand : BaseCommand
     {
+        [CommandParameter]
+        public bool WithSelection { get; set; }
+
         private readonly ICommandDiscovery _commandDiscovery;
+        private int _index;
 
         public PrintCommandsCommand(ICommandDiscovery commandDiscovery)
         {
@@ -20,12 +22,25 @@ namespace InteractiveConsole.Commands
 
         public override object Execute()
         {
+            PrintCommands();
+
+            if (!WithSelection)
+            {
+                return null;
+            }
+
+            PrintSelection();
+
+            return null;
+        }
+
+        private void PrintCommands()
+        {
             var categories = _commandDiscovery
                 .AvailableCommands
                 .ToLookup(x => x.Category, y => y);
 
             Printer.WriteLine().Info("Available commands");
-            var index = 0;
             foreach (var category in categories.OrderBy(x => x.Key))
             {
                 var categoryName = category.Key;
@@ -38,7 +53,10 @@ namespace InteractiveConsole.Commands
 
                 foreach (var command in category.OrderBy(x => x.Name))
                 {
-                    Printer.Write().Highlight($"#{index} ");
+                    if (WithSelection)
+                    {
+                        Printer.Write().Highlight($"#{_index} ");
+                    }
                     Printer.Write().Info($"{command.NameWithoutSuffix} ");
                     foreach (var option in command.Options)
                     {
@@ -48,12 +66,15 @@ namespace InteractiveConsole.Commands
                         Printer.Write().Info2($" ({requiredString}{option.TypeInfo.ToString()}) ");
                     }
                     Printer.NewLine();
-                    index++;
+                    _index++;
                 }
 
                 Printer.NewLine();
             }
+        }
 
+        private void PrintSelection()
+        {
             string selection;
             do
             {
@@ -70,7 +91,7 @@ namespace InteractiveConsole.Commands
                         .OrderBy(x => x.Category)
                         .ThenBy(x => x.Name)
                         .ToList();
-                    var commandIndices = Reader.NumberSelection("Enter command numbers: ", 0, index);
+                    var commandIndices = Reader.NumberSelection("Enter command numbers: ", 0, _index);
                     foreach (var i in commandIndices.OrderBy(x => x))
                     {
                         var command = orderedCommands[i];
@@ -100,8 +121,6 @@ namespace InteractiveConsole.Commands
                 }
             }
             while (selection != "q");
-
-            return null;
         }
     }
 }
