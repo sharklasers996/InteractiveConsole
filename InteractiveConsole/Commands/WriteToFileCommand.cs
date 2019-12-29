@@ -60,17 +60,17 @@ namespace InteractiveConsole.Commands
             var fullPath = System.IO.Path.Combine(directory, filename);
 
             var variableString = string.Empty;
-            if (Variable != null)
+            if (Variable.TypeInfo.IsList)
             {
-                variableString = Variable.ValueString;
-            }
-
-            if (Variables != null)
-            {
-                foreach (var v in Variables)
+                for (var i = 0; i < Variable.Length; i++)
                 {
-                    variableString += v.ToString();
+                    var listItem = Variable.TypeInfo.Type.GetProperty("Item").GetValue(Variable.Value, new object[] { i });
+                    variableString += listItem.ToString() + "\n";
                 }
+            }
+            else if (!String.IsNullOrEmpty(Variable.ValueString.Trim()))
+            {
+                variableString += Variable.ValueString;
             }
 
             File.WriteAllText(fullPath, variableString);
