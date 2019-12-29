@@ -13,5 +13,13 @@ namespace InteractiveConsole
         }
 
         public abstract object Execute();
+
+        public object ExecuteChildCommand(BaseCommand command)
+        {
+            command.Reader = Reader;
+            command.Printer = Printer;
+
+            return command.Execute();
+        }
     }
 }
