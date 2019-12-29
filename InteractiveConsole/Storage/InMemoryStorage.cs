@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using InteractiveConsole.Extensions;
 using InteractiveConsole.Models.Storage;
-using InteractiveConsole.Storage.Persistent;
 
 namespace InteractiveConsole.Storage
 {
@@ -11,20 +10,17 @@ namespace InteractiveConsole.Storage
     {
         public List<InMemoryStorageVariable> Variables { get; private set; }
 
-        private readonly IPersistentVariableStorage _persistentVariableStorage;
-
-        public InMemoryStorage(IPersistentVariableStorage persistentStorageRepository)
+        public InMemoryStorage()
         {
-            _persistentVariableStorage = persistentStorageRepository;
-            Variables = _persistentVariableStorage.Get();
+            Variables = new List<InMemoryStorageVariable>();
         }
 
-        public VariableStorageResult Add(object value, ParameterParserResult parserResult)
+        public InMemoryStorageVariable Add(object value, ParameterParserResult parserResult)
         {
             return Add(value, parserResult.CommandName);
         }
 
-        public VariableStorageResult Add(object value, string producedBy)
+        public InMemoryStorageVariable Add(object value, string producedBy)
         {
             var variable = new InMemoryStorageVariable
             {
@@ -40,13 +36,7 @@ namespace InteractiveConsole.Storage
             }
 
             Variables.Add(variable);
-            var persisted = _persistentVariableStorage.Save(variable);
-
-            return new VariableStorageResult
-            {
-                Variable = variable,
-                Persisted = persisted
-            };
+            return variable;
         }
 
         public InMemoryStorageVariable TryGetVariable(string stringId)
@@ -72,7 +62,6 @@ namespace InteractiveConsole.Storage
             }
 
             Variables.Remove(variable);
-            _persistentVariableStorage.Delete(id);
 
             return true;
         }

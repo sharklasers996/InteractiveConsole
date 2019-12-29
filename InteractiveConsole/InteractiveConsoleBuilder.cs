@@ -1,10 +1,8 @@
 using System;
 using InteractiveConsole.Output;
 using InteractiveConsole.Storage;
-using InteractiveConsole.Storage.Persistent;
 using Unity;
 using Unity.Injection;
-using Microsoft.EntityFrameworkCore;
 
 namespace InteractiveConsole
 {
@@ -26,19 +24,11 @@ namespace InteractiveConsole
             _unityContainer.RegisterType<ICommandReader, CommandReader>();
             _unityContainer.RegisterType<IPrinter, Printer>(new InjectionConstructor(_theme));
             _unityContainer.RegisterType<IReader, Reader>(new InjectionConstructor(_theme));
-            _unityContainer.RegisterType<IPersistentVariableStorage, PersistentVariableStorage>();
         }
 
         public InteractiveConsoleBuilder()
         {
             _unityContainer = new UnityContainer();
-            MigrateDatabase();
-        }
-
-        private void MigrateDatabase()
-        {
-            using var ctx = new PersistentStorageDbContext();
-            ctx.Database.Migrate();
         }
 
         public void Run()
