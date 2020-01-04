@@ -116,7 +116,10 @@ namespace InteractiveConsole.Commands
                         }
 
                         Printer.NewLine();
-                        Printer.WriteLine().None(command.Description);
+                        if (!String.IsNullOrEmpty(command.Description))
+                        {
+                            Printer.WriteLine().None(command.Description);
+                        }
                     }
                 }
             }
