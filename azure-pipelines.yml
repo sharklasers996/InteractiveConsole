@@ -18,4 +18,4 @@ steps:
     dotnet build
     dotnet test
     dotnet pack -c Release
-    dotnet nuget push .\Build\Interactive.Console.*.nupkg -k oy2n5yh3prwrymdvixnaodahjyz7kghudn2ke7ma47tdsa -s https://api.nuget.org/v3/index.json
+    dotnet nuget push ./Build/Interactive.Console.*.nupkg -k oy2n5yh3prwrymdvixnaodahjyz7kghudn2ke7ma47tdsa -s https://api.nuget.org/v3/index.json
