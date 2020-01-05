@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Unity" Version="5.11.1"/>
@@ -12,4 +12,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0"/>
     <PackageReference Include="Utf8Json" Version="1.3.7"/>
   </ItemGroup>
+  <PropertyGroup>
+    <PackageId>Interactive.Console</PackageId>
+    <Version>0.0.2</Version>
+    <Authors>roadsidejesus</Authors>
+    <Company>InteractiveConsole</Company>
+    <Title>InteractiveConsole</Title>
+    <PackageProjectUrl>https://github.com/sharklasers996/InteractiveConsole</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sharklasers996/InteractiveConsole</RepositoryUrl>
+    <OutputPath>..\Build</OutputPath>
+    <PackageTags>console</PackageTags>
+  </PropertyGroup>
 </Project>

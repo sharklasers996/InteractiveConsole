@@ -273,3 +273,6 @@ InteractiveConsoleTestRunner/**
 */obj/
 InteractiveConsole.Tests/obj/
 *.cache
+Nuget/*
+Build/*
+InteractiveConsole/obj/Debug/netstandard2.1/*

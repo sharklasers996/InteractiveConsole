@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -19,5 +14,8 @@ steps:
   displayName: 'Run a multi-line script'
 
 - script: |
+    dotnet clean
     dotnet build
     dotnet test
+    dotnet pack -c Release
+    dotnet nuget push .\Build\Interactive.Console.*.nupkg -k oy2n5yh3prwrymdvixnaodahjyz7kghudn2ke7ma47tdsa -s https://api.nuget.org/v3/index.json
