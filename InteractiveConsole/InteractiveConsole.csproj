@@ -14,7 +14,7 @@
   </ItemGroup>
   <PropertyGroup>
     <PackageId>Interactive.Console</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>roadsidejesus</Authors>
     <Company>InteractiveConsole</Company>
     <Title>InteractiveConsole</Title>

@@ -27,7 +27,7 @@ namespace InteractiveConsole
 
             var parametersString = input.Substring(firstSpaceIndex).Trim();
 
-            var parameterMatches = Regex.Matches(parametersString, "\\s?(?<parameterName>\\w+)=((?<parameterValue>[A-Za-z0-9/~!@#$'%:\\\\&*\\(\\)\\-\\+\\[\\]\\.]+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")");
+            var parameterMatches = Regex.Matches(parametersString, "\\s?(?<parameterName>\\w+)=((?<parameterValue>[A-Za-z0-9/~!@#$'%:\\\\&*\\(\\)\\-\\+\\[\\]\\.\\?]+)|\"(?<parameterValue>([^\"\\\\]|\\\\.)*)\")");
             if (!parameterMatches.Any()
                 && !String.IsNullOrEmpty(parametersString.Trim()))
             {
